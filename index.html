@@ -812,11 +812,17 @@ function selectPersona(card) {
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('active'));
   card.classList.add('active'); persona=card.dataset.persona;
   const isKak=persona==='taksaka'; const img=isKak?'taksaka.webp':'dokter.webp';
-  setEl('ct-name',isKak?'Kak Taksaka':'Dokter Taksaka');
+  const name=isKak?'Kak Taksaka':'Dokter Taksaka';
+  setEl('ct-name',name);
   document.getElementById('ct-dot').className='ct-dot'+(isKak?'':' teal');
   document.getElementById('ct-avatar-img').src=img;
   document.getElementById('nav-logo-img').src=img;
   document.getElementById('beranda-char').src=img;
+  // Update welcome screen char jika masih tampil
+  const cwChar=document.querySelector('.cw-char');
+  if(cwChar) cwChar.src=img;
+  const cwTitle=document.querySelector('.cw-sub');
+  if(cwTitle) cwTitle.textContent=`Aku ${isKak?'Kak':'Dokter'} Taksaka, ${isKak?'siap bantu apa aja':'siap dengerin kamu'}. Mau ngobrol apa hari ini?`;
   closeOverlay();
 }
 
@@ -949,26 +955,41 @@ async function loadRiwayat(){
     const d=await res.json(); const history=d.history??[];
     setEl('rl-count',`${history.length} pesan`);
     if(!history.length){el.innerHTML='<div class="rl-empty">Belum ada riwayat chat.</div>';return;}
-    el.innerHTML=history.slice().reverse().map(m=>{
-      const pk=m.persona?.includes('Dokter')?'dokter':'taksaka';
-      const safeM=JSON.stringify(m).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
+
+    // Untuk pesan user yang tidak punya persona, cari persona dari pesan AI terdekat
+    const enriched = history.map((m, i) => {
+      if (m.persona) return m;
+      // Cari pesan AI setelah atau sebelum pesan user ini
+      const nextAI = history.slice(i+1).find(x => x.role==='assistant');
+      const prevAI = history.slice(0,i).reverse().find(x => x.role==='assistant');
+      const ref = nextAI || prevAI;
+      return { ...m, _inferredPersona: ref?.persona || null };
+    });
+
+    el.innerHTML=enriched.slice().reverse().map(m=>{
+      const personaStr = m.persona || m._inferredPersona || '';
+      const pk = personaStr.toLowerCase().includes('dokter') ? 'dokter' : 'taksaka';
+      const personaLabel = pk==='dokter' ? 'Dokter Taksaka' : 'Kak Taksaka';
+      const safeM=JSON.stringify({...m, _resolvedPk: pk}).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026');
       return `<div class="rl-item" onclick='showRiwayatDetail(${safeM})'>
-        <div class="rl-persona ${pk==='dokter'?'teal':''}">${m.persona||'Kak Taksaka'}</div>
+        <div class="rl-persona ${pk==='dokter'?'teal':''}">${personaLabel}</div>
         <div class="rl-role">${m.role==='assistant'?'AI':'Kamu'}</div>
         <div class="rl-text">${esc(m.text)}</div>
         <div class="rl-time">${fmtDate(m.created_at)}</div>
       </div>`;
     }).join('');
-  } catch { el.innerHTML='<div class="rl-empty">Gagal memuat riwayat.</div>'; }
+  } catch(e) { console.error(e); el.innerHTML='<div class="rl-empty">Gagal memuat riwayat.</div>'; }
 }
 
 function showRiwayatDetail(msg){
   document.querySelectorAll('.rl-item').forEach(el=>el.classList.remove('active'));
   if(event&&event.currentTarget) event.currentTarget.classList.add('active');
   const detail=document.getElementById('riwayat-detail');
-  const isAI=msg.role==='assistant'; const pk=msg.persona?.includes('Dokter')?'dokter':'taksaka';
+  const isAI=msg.role==='assistant';
+  // Gunakan _resolvedPk jika ada, fallback ke deteksi dari persona string
+  const pk = msg._resolvedPk || (( msg.persona||'').toLowerCase().includes('dokter') ? 'dokter' : 'taksaka');
   const avSrc=pk==='taksaka'?'taksaka.webp':'dokter.webp';
-  const who=isAI?(msg.persona||'Kak Taksaka'):(currentUser?.nama?.split(' ')[0]||'Kamu');
+  const who=isAI?(msg.persona||(pk==='dokter'?'Dokter Taksaka':'Kak Taksaka')):(currentUser?.nama?.split(' ')[0]||'Kamu');
   const content=isAI?marked.parse(msg.text):`<p>${esc(msg.text)}</p>`;
   detail.innerHTML=`
     <div class="date-sep">${fmtDate(msg.created_at)}</div>
@@ -988,15 +1009,27 @@ async function loadLeaderboard(){
   document.getElementById('lb-podium').innerHTML='';
   try {
     const res=await fetch(`${API}/api/profile/leaderboard`,{headers:{Authorization:`Bearer ${token}`}});
-    if(!res.ok) throw new Error();
-    const d=await res.json(); const lb=d.leaderboard??[];
+    const d=await res.json();
+    if(!res.ok){
+      document.getElementById('lb-list').innerHTML=`<div class="lb-err">Gagal memuat: ${esc(d.error||'Server error')}.<br><small style="color:var(--muted);font-family:var(--body)">Pastikan migration.sql sudah dijalankan di Supabase.</small></div>`;
+      return;
+    }
+    const lb=d.leaderboard??[];
     const myId=String(currentUser?.userId);
-    const top3=[lb[1],lb[0],lb[2]].filter(Boolean);
-    document.getElementById('lb-podium').innerHTML=top3.map(u=>{
-      const rank=lb.indexOf(u)+1; const rCls=rank===1?'r1':rank===2?'r2':'r3';
+    if(!lb.length){
+      document.getElementById('lb-list').innerHTML='<div class="lb-err">Belum ada data pengguna.</div>';
+      return;
+    }
+    // Podium — urutan tampil: 2nd, 1st, 3rd
+    const podiumOrder=[lb[1],lb[0],lb[2]].filter(Boolean);
+    document.getElementById('lb-podium').innerHTML=podiumOrder.map(u=>{
+      const rank=lb.indexOf(u)+1;
+      const rCls=rank===1?'r1':rank===2?'r2':'r3';
       const avCls=rank===1?'rank-1':rank===2?'rank-2':'rank-3';
       const emoji=rank===1?'🥇':rank===2?'🥈':'🥉';
-      const avContent=u.avatar_url?`<img src="${u.avatar_url}" alt=""/>`:u.members?.nama?.[0]||'👤';
+      const avContent=u.avatar_url
+        ?`<img src="${u.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
+        :`<span style="font-size:22px">👤</span>`;
       return `<div class="podium-item">
         <div class="podium-avatar ${avCls}">${avContent}</div>
         <div class="podium-rank">${emoji}</div>
@@ -1005,12 +1038,15 @@ async function loadLeaderboard(){
         <div class="podium-bar ${rCls}"></div>
       </div>`;
     }).join('');
-    if(!lb.length){document.getElementById('lb-list').innerHTML='<div class="lb-err">Belum ada data.</div>';return;}
+    // Full list
     document.getElementById('lb-list').innerHTML=lb.map((u,i)=>{
       const isMe=String(u.id)===myId;
+      const avContent=u.avatar_url
+        ?`<img src="${u.avatar_url}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
+        :'👤';
       return `<div class="lb-item ${isMe?'lb-me':''}">
         <div class="lb-rank ${i<3?'top':''}">${i+1}</div>
-        <div class="lb-av">${u.avatar_url?`<img src="${u.avatar_url}" alt=""/>`:'👤'}</div>
+        <div class="lb-av">${avContent}</div>
         <div class="lb-info">
           <div class="lb-name">${esc(u.members?.nama||'—')}${isMe?' <span style="font-size:10px;color:var(--gold-l);font-family:var(--cinzel)">(Kamu)</span>':''}</div>
           <div class="lb-detail">Gen ${u.members?.generasi||'?'} · ${esc(u.members?.jabatan||'—')}</div>
@@ -1018,7 +1054,10 @@ async function loadLeaderboard(){
         <div class="lb-usage"><div class="lb-used">${u.used}</div><div class="lb-daily">dari ${u.daily}</div></div>
       </div>`;
     }).join('');
-  } catch { document.getElementById('lb-list').innerHTML='<div class="lb-err">Gagal memuat leaderboard.</div>'; }
+  } catch(e){
+    console.error('loadLeaderboard error:',e);
+    document.getElementById('lb-list').innerHTML='<div class="lb-err">Gagal terhubung ke server.</div>';
+  }
 }
 
 function setupAvatarUpload(){
