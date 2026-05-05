@@ -59,9 +59,15 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opac
 #app{position:relative;z-index:1;display:flex;height:100vh}
 #app.hidden{display:none}
 
-/* NAV RAIL */
-#nav{width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;z-index:40;flex-shrink:0}
-.nav-logo{width:42px;height:42px;border-radius:13px;overflow:hidden;border:1px solid var(--border-g);margin-bottom:28px;background:#0a0c10;cursor:pointer}
+/* NAV RAIL — collapsible */
+#nav{width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;z-index:40;flex-shrink:0;transition:width .28s cubic-bezier(.4,0,.2,1),padding .28s;overflow:hidden}
+#nav.collapsed{width:0;padding:0;border-right:none}
+/* Toggle button — sits outside nav, always visible */
+#nav-toggle{position:fixed;top:12px;left:calc(var(--nav-w) - 14px);z-index:50;width:28px;height:28px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;transition:left .28s cubic-bezier(.4,0,.2,1),background .2s,color .2s;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#nav-toggle:hover{background:var(--surface2);color:var(--gold-l);border-color:var(--border-g)}
+#nav.collapsed ~ #nav-toggle,
+body.nav-collapsed #nav-toggle{left:0px}
+.nav-logo{width:42px;height:42px;border-radius:13px;overflow:hidden;border:1px solid var(--border-g);margin-bottom:20px;background:#0a0c10;cursor:pointer;flex-shrink:0}
 .nav-logo img{width:100%;height:100%;object-fit:cover;object-position:top;transform:scale(1.5) translateY(5px)}
 .nav-links{display:flex;flex-direction:column;gap:4px;flex:1}
 .nav-item{width:48px;height:48px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .2s;border:1px solid transparent;position:relative;color:var(--muted)}
@@ -69,8 +75,9 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opac
 .nav-item.active{background:var(--gold-dim);border-color:var(--border-g);color:var(--gold-l)}
 .nav-item svg{width:20px;height:20px;flex-shrink:0}
 .nav-label{font-size:9px;font-family:var(--cinzel);letter-spacing:.5px;white-space:nowrap}
-.nav-tooltip{position:absolute;left:calc(100% + 12px);background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--cinzel);color:var(--text);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:100}
+.nav-tooltip{position:absolute;left:calc(100% + 14px);background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--cinzel);color:var(--text);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:100}
 .nav-item:hover .nav-tooltip{opacity:1}
+#nav.collapsed .nav-tooltip{display:none}
 .nav-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;align-items:center}
 .nav-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;border:1.5px solid var(--border2);cursor:pointer;background:#0a0c10;transition:border-color .2s;display:flex;align-items:center;justify-content:center;font-size:18px}
 .nav-avatar:hover{border-color:var(--gold)}
@@ -448,6 +455,9 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opac
     </div>
   </nav>
 
+  <!-- Nav toggle button -->
+  <button id="nav-toggle" onclick="toggleNav()" title="Sembunyikan/tampilkan menu">‹</button>
+
   <div id="overlay" onclick="closeOverlay()"></div>
 
   <div id="pages">
@@ -649,6 +659,7 @@ function showApp() {
   document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app').classList.remove('hidden');
   setupTextarea(); setupFile(); setupAvatarUpload();
   document.getElementById('bio-input').addEventListener('input', updateBioCount);
+  initNavState();
 }
 function setupLoginEnter() {
   ['l-nama','l-jabatan','l-generasi'].forEach(id =>
@@ -695,25 +706,53 @@ window.onpopstate = e => { if(e.state?.page) navigate(e.state.page,true); };
 
 async function loadProfile() {
   if(!token) return;
+
+  // Selalu isi dari JWT dulu sebagai fallback instan
+  const h=new Date().getHours();
+  const greet=h<11?'Selamat Pagi':h<15?'Selamat Siang':h<19?'Selamat Sore':'Selamat Malam';
+  const jwtNama = currentUser?.nama || currentUser?.name || '';
+  const jwtFirstName = jwtNama.split(' ')[0] || 'Kamu';
+  const jwtJabatan = currentUser?.jabatan || '—';
+  const jwtGenerasi = currentUser?.generasi || '?';
+  const jwtTipe = currentUser?.tipe || 'gratis';
+
+  setEl('beranda-greeting', greet);
+  setEl('beranda-nama', jwtFirstName);
+  setEl('p-nama', jwtNama || '—');
+  setEl('p-detail', `Gen ${jwtGenerasi} · ${jwtJabatan}`);
+  const badge=document.getElementById('p-badge');
+  if(badge){ badge.textContent=jwtTipe==='jabatan'?'⭐ Jabatan':'🌿 Gratis'; badge.className=`profil-badge ${jwtTipe}`; }
+
+  // Set usage fallback dari tipe JWT
+  const jwtDaily = jwtTipe === 'jabatan' ? 60 : 40;
+  usageData = { used: 0, daily: jwtDaily };
+  updateUsageUI();
+  setEl('p-used', 0); setEl('p-daily', jwtDaily);
+
+  // Coba fetch profil lengkap dari API (mungkin gagal jika migration belum jalan)
   try {
     const res = await fetch(`${API}/api/profile`,{headers:{Authorization:`Bearer ${token}`}});
-    if(!res.ok) return;
+    if(!res.ok) { loadProfileStats(); return; } // gagal fetch = pakai JWT saja
     const d = await res.json(); const p = d.profile;
+    if(!p) { loadProfileStats(); return; }
+
     usageData={used:p.used??0,daily:p.daily??40};
-    const firstName=p.members?.nama?.split(' ')[0]||'Anggota';
-    const h=new Date().getHours();
-    const greet=h<11?'Selamat Pagi':h<15?'Selamat Siang':h<19?'Selamat Sore':'Selamat Malam';
-    setEl('beranda-greeting',greet); setEl('beranda-nama',firstName);
     updateUsageUI();
-    if(p.avatar_url) { setAvatarAll(p.avatar_url); }
-    setEl('p-nama',p.members?.nama||'—');
-    setEl('p-detail',`Gen ${p.members?.generasi} · ${p.members?.jabatan}`);
-    const badge=document.getElementById('p-badge');
-    badge.textContent=p.tipe==='jabatan'?'⭐ Jabatan':'🌿 Gratis'; badge.className=`profil-badge ${p.tipe}`;
-    setEl('p-used',p.used??0); setEl('p-daily',p.daily??40);
-    if(p.bio) { document.getElementById('bio-input').value=p.bio; updateBioCount(); }
-    loadProfileStats();
-  } catch(e){ console.error(e); }
+
+    // Override dengan data API yang lebih lengkap
+    const apiNama = p.members?.nama || jwtNama;
+    const apiFirst = apiNama.split(' ')[0] || jwtFirstName;
+    setEl('beranda-nama', apiFirst);
+    setEl('p-nama', apiNama);
+    setEl('p-detail', `Gen ${p.members?.generasi??jwtGenerasi} · ${p.members?.jabatan??jwtJabatan}`);
+    const tipe = p.tipe || jwtTipe;
+    if(badge){ badge.textContent=tipe==='jabatan'?'⭐ Jabatan':'🌿 Gratis'; badge.className=`profil-badge ${tipe}`; }
+    setEl('p-used', p.used??0); setEl('p-daily', p.daily??40);
+    if(p.avatar_url) setAvatarAll(p.avatar_url);
+    if(p.bio){ document.getElementById('bio-input').value=p.bio; updateBioCount(); }
+  } catch(e){ console.error('loadProfile error:', e); }
+
+  loadProfileStats();
 }
 
 async function loadProfileStats() {
@@ -1009,6 +1048,25 @@ async function saveBio(){
     toast(res.ok?'Bio berhasil disimpan!':'Gagal menyimpan bio.',res.ok?'ok':'err');
   } catch { toast('Gagal menyimpan.','err'); }
   finally { btn.disabled=false; btn.textContent='Simpan'; }
+}
+
+function toggleNav() {
+  const nav = document.getElementById('nav');
+  const btn = document.getElementById('nav-toggle');
+  const collapsed = nav.classList.toggle('collapsed');
+  btn.textContent = collapsed ? '›' : '‹';
+  btn.style.left = collapsed ? '8px' : `calc(var(--nav-w) - 14px)`;
+  localStorage.setItem('nav_collapsed', collapsed ? '1' : '0');
+}
+
+function initNavState() {
+  if (localStorage.getItem('nav_collapsed') === '1') {
+    const nav = document.getElementById('nav');
+    const btn = document.getElementById('nav-toggle');
+    nav.classList.add('collapsed');
+    btn.textContent = '›';
+    btn.style.left = '8px';
+  }
 }
 
 function toggleChatSidebar(){document.getElementById('chat-sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
