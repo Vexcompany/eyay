@@ -550,9 +550,14 @@ body.nav-collapsed #nav-toggle{left:0px}
           <div class="cs-title">Pengaturan Chat</div>
         </div>
 
-        <!-- PERSONA SECTION -->
+        <!-- ── TAKSAKA AI SECTION ── -->
+        <div id="taksaka-section">
         <div class="cs-sect">
-          <span class="cs-sect-lbl">Pilih Persona</span>
+          <span class="cs-sect-lbl" style="display:flex;align-items:center;gap:6px">
+            Taksaka AI
+            <span style="font-size:8px;padding:1px 6px;border-radius:99px;background:var(--gold-dim);border:1px solid var(--border-g);color:var(--gold-l);font-family:var(--cinzel)">GPT-4</span>
+          </span>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;line-height:1.5">AI original Pagaska dengan persona khusus. Limit harian berlaku.</div>
           <div class="p-card gold active" data-persona="taksaka" onclick="selectPersona(this)">
             <div class="p-char"><img src="taksaka.webp" alt="Kak Taksaka"/></div>
             <div class="p-info"><div class="p-name">Kak Taksaka</div><div class="p-desc">Santai &amp; serba bisa</div></div>
@@ -564,11 +569,10 @@ body.nav-collapsed #nav-toggle{left:0px}
             <div class="p-radio"></div>
           </div>
         </div>
-        <div class="cs-divider"></div>
 
-        <!-- AI MODE SECTION -->
+        <!-- AI MODE (untuk Taksaka AI) -->
         <div class="cs-sect" style="padding-bottom:6px">
-          <span class="cs-sect-lbl">AI Mode</span>
+          <span class="cs-sect-lbl">Mode Taksaka AI</span>
         </div>
         <div class="mode-pills" id="mode-pills">
           <div class="mode-pill active" data-mode="default" onclick="selectMode(this)">💬 Default</div>
@@ -577,9 +581,11 @@ body.nav-collapsed #nav-toggle{left:0px}
           <div class="mode-pill red-m" data-mode="creative" onclick="selectMode(this)">✨ Creative</div>
           <div class="mode-pill" data-mode="tugas" onclick="selectMode(this)">📋 Tugas</div>
         </div>
-        <div class="cs-divider"></div>
 
-        <!-- MULTI-AI SECTION -->
+        </div><!-- /taksaka-section -->
+        <div class="cs-divider" style="margin:10px 0;border-top:2px dashed rgba(255,255,255,0.06)"></div>
+
+        <!-- ── MULTI-AI SECTION — MODEL BERBEDA ── -->
         <div class="cs-sect" style="padding-bottom:4px">
           <span class="cs-sect-lbl" style="display:flex;align-items:center;justify-content:space-between">
             Multi-AI
@@ -587,7 +593,7 @@ body.nav-collapsed #nav-toggle{left:0px}
           </span>
         </div>
         <div class="multi-ai-section">
-          <div class="multi-ai-desc">Akses model AI alternatif: Gemma, LLaMA, Mistral. Tanpa limit harian!</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:8px;line-height:1.5">Model AI berbeda (bukan Taksaka). Tanpa persona Pagaska, tanpa limit harian.</div>
           <div class="model-select-wrap">
             <select class="model-select" id="multi-model-select" onchange="onModelChange()">
               <option value="gemma">🔷 Gemma 7B (Default)</option>
@@ -1258,12 +1264,25 @@ function toggleMultiAI() {
   const label = document.getElementById('multi-toggle-label');
   const indicator = document.getElementById('ct-multi-indicator');
   const multiStatus = document.getElementById('cs-multi-status');
+  const taksakaSection = document.getElementById('taksaka-section');
+  const modePills = document.getElementById('mode-pills');
+
   if(useMultiAI) {
     btn.classList.add('active');
     dot.style.background='var(--teal)';dot.style.boxShadow='0 0 6px var(--teal)';
     label.textContent = 'Multi-AI Aktif ✓';
     if(indicator) indicator.style.display='inline-flex';
-    if(multiStatus) multiStatus.textContent = '✦ Mode Multi-AI aktif — tanpa limit!';
+    if(multiStatus) multiStatus.textContent = '✦ Multi-AI aktif — tanpa limit!';
+    // Dim Taksaka section — it's not used while Multi-AI is on
+    if(taksakaSection) { taksakaSection.style.opacity='0.38'; taksakaSection.style.pointerEvents='none'; }
+    if(modePills) { modePills.style.opacity='0.38'; modePills.style.pointerEvents='none'; }
+    // Update topbar to show Multi-AI model name instead of persona
+    const badge = document.getElementById('ct-mode-badge');
+    if(badge) { badge.textContent='🤖 Multi-AI'; badge.className='ct-mode-badge coding'; }
+    setEl('ct-name', MULTI_MODELS[multiModel]?.label || 'Multi-AI');
+    setEl('ct-status-text', `${MULTI_MODELS[multiModel]?.label} · Tanpa limit harian`);
+    const dot2 = document.getElementById('ct-dot');
+    if(dot2) { dot2.style.background='var(--teal)'; dot2.style.boxShadow='0 0 8px var(--teal)'; }
     toast(`Multi-AI aktif: ${MULTI_MODELS[multiModel].label}`, 'ok');
   } else {
     btn.classList.remove('active');
@@ -1271,6 +1290,20 @@ function toggleMultiAI() {
     label.textContent = 'Gunakan Multi-AI';
     if(indicator) indicator.style.display='none';
     if(multiStatus) multiStatus.textContent='';
+    // Restore Taksaka section
+    if(taksakaSection) { taksakaSection.style.opacity=''; taksakaSection.style.pointerEvents=''; }
+    if(modePills) { modePills.style.opacity=''; modePills.style.pointerEvents=''; }
+    // Restore topbar to current persona
+    const isKak = persona==='taksaka';
+    const img = isKak?'taksaka.webp':'dokter.webp';
+    const name = isKak?'Kak Taksaka':'Dokter Taksaka';
+    setEl('ct-name', '');
+    const ctName = document.getElementById('ct-name');
+    if(ctName) ctName.innerHTML = name + ` <span class="ct-mode-badge ${AI_MODES[aiMode]?.badge||'default'}" id="ct-mode-badge">${AI_MODES[aiMode]?.label||'💬 Default'}</span>`;
+    const statusTexts = {default:'Online · Siap membantu',research:'Mode Research · Analisis mendalam',coding:'Mode Coding · Technical focus',creative:'Mode Creative · Imajinasi bebas',tugas:'Mode Tugas · Bantu belajar'};
+    setEl('ct-status-text', statusTexts[aiMode]||'Online · Siap membantu');
+    const dot2 = document.getElementById('ct-dot');
+    if(dot2) { dot2.style.background=''; dot2.style.boxShadow=''; dot2.className=isKak?'ct-dot':'ct-dot teal'; }
     toast('Kembali ke Taksaka AI', '');
   }
 }
@@ -1279,7 +1312,10 @@ function onModelChange() {
   multiModel = document.getElementById('multi-model-select').value;
   const modelLabel = document.getElementById('ct-model-name');
   if(modelLabel) modelLabel.textContent = MULTI_MODELS[multiModel]?.label || multiModel;
-  if(useMultiAI) toast(`Model: ${MULTI_MODELS[multiModel].label}`, 'ok');
+  if(useMultiAI) {
+    setEl('ct-status-text', `${MULTI_MODELS[multiModel]?.label} · Tanpa limit harian`);
+    toast(`Model: ${MULTI_MODELS[multiModel].label}`, 'ok');
+  }
 }
 
 function toggleChatSidebar(){document.getElementById('chat-sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
