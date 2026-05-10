@@ -166,6 +166,41 @@ body.nav-collapsed #nav-toggle{left:0px}
 .cs-usage-lbl{font-size:11px;color:var(--muted)}
 .cs-usage-num{font-size:11px;font-family:var(--cinzel);color:var(--text2)}
 .cs-actions{padding:12px 16px;margin-top:auto;flex-shrink:0;border-top:1px solid var(--border)}
+
+/* AI MODE PILLS */
+.mode-pills{display:flex;flex-wrap:wrap;gap:5px;padding:0 16px 12px}
+.mode-pill{padding:5px 10px;border:1px solid var(--border);border-radius:99px;font-size:10px;font-family:var(--cinzel);letter-spacing:.5px;color:var(--muted);cursor:pointer;transition:all .18s;background:transparent;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.mode-pill:hover{border-color:var(--gold);color:var(--gold-l);background:var(--gold-dim)}
+.mode-pill.active{border-color:var(--gold);color:var(--gold-l);background:var(--gold-dim);box-shadow:0 0 10px rgba(196,158,80,.15)}
+.mode-pill.purple.active{border-color:#9b8eff;color:#b8aeff;background:rgba(155,142,255,0.1);box-shadow:0 0 10px rgba(155,142,255,.15)}
+.mode-pill.teal-m.active{border-color:var(--teal);color:var(--teal-l);background:var(--teal-dim)}
+.mode-pill.red-m.active{border-color:#e09050;color:#f0b070;background:rgba(224,144,80,0.1)}
+
+/* MULTI-AI SECTION */
+.multi-ai-section{padding:0 16px 14px;flex-shrink:0}
+.model-select-wrap{position:relative;margin-bottom:6px}
+.model-select{width:100%;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-family:var(--cinzel);font-size:10px;letter-spacing:.5px;padding:9px 14px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;transition:border-color .2s,box-shadow .2s}
+.model-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+.model-select option{background:#181b22;font-family:var(--body);font-size:13px}
+.model-select-arrow{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:9px}
+.multi-ai-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:9px;font-family:var(--cinzel);letter-spacing:.5px;border:1px solid rgba(78,205,196,.3);background:rgba(78,205,196,.06);color:var(--teal);margin-bottom:6px}
+.multi-ai-desc{font-size:10px;color:var(--muted);line-height:1.55;margin-bottom:6px}
+.btn-multi-toggle{width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border2);border-radius:var(--rs);color:var(--text2);font-family:var(--cinzel);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-multi-toggle:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-dim)}
+.btn-multi-toggle.active{border-color:var(--teal);color:var(--teal-l);background:var(--teal-dim)}
+.multi-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);transition:background .2s}
+.btn-multi-toggle.active .multi-dot{background:var(--teal);box-shadow:0 0 6px var(--teal)}
+
+/* MODE INDICATOR IN TOPBAR */
+.ct-mode-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:9px;font-family:var(--cinzel);letter-spacing:.5px;margin-left:8px;transition:all .2s}
+.ct-mode-badge.default{border:1px solid var(--border-g);background:var(--gold-dim);color:var(--gold-l)}
+.ct-mode-badge.research{border:1px solid rgba(155,142,255,.35);background:rgba(155,142,255,.08);color:#b8aeff}
+.ct-mode-badge.coding{border:1px solid rgba(78,205,196,.3);background:var(--teal-dim);color:var(--teal-l)}
+.ct-mode-badge.creative{border:1px solid rgba(224,144,80,.3);background:rgba(224,144,80,.08);color:#f0b070}
+.ct-mode-badge.tugas{border:1px solid var(--border-g);background:var(--gold-dim);color:var(--gold-l)}
+
+/* MULTI-AI INDICATOR */
+.multi-ai-indicator{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.25);font-size:10px;font-family:var(--cinzel);color:var(--teal-l);margin-left:auto}
 .btn-new-chat{width:100%;padding:10px;background:transparent;border:1px solid var(--border-g);border-radius:var(--rs);color:var(--gold-l);font-family:var(--cinzel);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
 .btn-new-chat:hover{background:var(--gold-dim)}
 #chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
@@ -512,10 +547,12 @@ body.nav-collapsed #nav-toggle{left:0px}
       <div id="chat-sidebar">
         <div class="cs-head">
           <button class="hamburger" onclick="closeOverlay()" style="display:block;font-size:18px">✕</button>
-          <div class="cs-title">Persona</div>
+          <div class="cs-title">Pengaturan Chat</div>
         </div>
+
+        <!-- PERSONA SECTION -->
         <div class="cs-sect">
-          <span class="cs-sect-lbl">Pilih AI</span>
+          <span class="cs-sect-lbl">Pilih Persona</span>
           <div class="p-card gold active" data-persona="taksaka" onclick="selectPersona(this)">
             <div class="p-char"><img src="taksaka.webp" alt="Kak Taksaka"/></div>
             <div class="p-info"><div class="p-name">Kak Taksaka</div><div class="p-desc">Santai &amp; serba bisa</div></div>
@@ -528,9 +565,48 @@ body.nav-collapsed #nav-toggle{left:0px}
           </div>
         </div>
         <div class="cs-divider"></div>
+
+        <!-- AI MODE SECTION -->
+        <div class="cs-sect" style="padding-bottom:6px">
+          <span class="cs-sect-lbl">AI Mode</span>
+        </div>
+        <div class="mode-pills" id="mode-pills">
+          <div class="mode-pill active" data-mode="default" onclick="selectMode(this)">💬 Default</div>
+          <div class="mode-pill purple" data-mode="research" onclick="selectMode(this)">🔍 Research</div>
+          <div class="mode-pill teal-m" data-mode="coding" onclick="selectMode(this)">💻 Coding</div>
+          <div class="mode-pill red-m" data-mode="creative" onclick="selectMode(this)">✨ Creative</div>
+          <div class="mode-pill" data-mode="tugas" onclick="selectMode(this)">📋 Tugas</div>
+        </div>
+        <div class="cs-divider"></div>
+
+        <!-- MULTI-AI SECTION -->
+        <div class="cs-sect" style="padding-bottom:4px">
+          <span class="cs-sect-lbl" style="display:flex;align-items:center;justify-content:space-between">
+            Multi-AI
+            <div class="multi-ai-badge">✦ Beta</div>
+          </span>
+        </div>
+        <div class="multi-ai-section">
+          <div class="multi-ai-desc">Akses model AI alternatif: Gemma, LLaMA, Mistral. Tanpa limit harian!</div>
+          <div class="model-select-wrap">
+            <select class="model-select" id="multi-model-select" onchange="onModelChange()">
+              <option value="gemma">🔷 Gemma 7B (Default)</option>
+              <option value="llama">🦙 LLaMA 3 8B</option>
+              <option value="mistral">⚡ Mistral 7B v0.2</option>
+            </select>
+            <div class="model-select-arrow">▼</div>
+          </div>
+          <button class="btn-multi-toggle" id="btn-multi-toggle" onclick="toggleMultiAI()">
+            <div class="multi-dot" id="multi-dot"></div>
+            <span id="multi-toggle-label">Gunakan Multi-AI</span>
+          </button>
+        </div>
+        <div class="cs-divider"></div>
+
         <div class="cs-usage">
-          <div class="cs-usage-row"><span class="cs-usage-lbl">Penggunaan</span><span class="cs-usage-num" id="cs-usage-count">0 / 40</span></div>
+          <div class="cs-usage-row"><span class="cs-usage-lbl">Penggunaan Harian</span><span class="cs-usage-num" id="cs-usage-count">0 / 40</span></div>
           <div class="ubar"><div class="ubar-fill" id="cs-ubar"></div></div>
+          <div class="cs-usage-row" style="margin-top:6px"><span class="cs-usage-lbl" id="cs-multi-status" style="font-size:10px;color:var(--teal)"></span></div>
         </div>
         <div class="cs-actions"><button class="btn-new-chat" onclick="newChat()">✦ Chat Baru</button></div>
       </div>
@@ -539,8 +615,12 @@ body.nav-collapsed #nav-toggle{left:0px}
           <button class="hamburger" onclick="toggleChatSidebar()">☰</button>
           <div class="ct-avatar"><img id="ct-avatar-img" src="taksaka.webp" alt="Avatar"/></div>
           <div class="ct-info">
-            <div class="ct-name" id="ct-name">Kak Taksaka</div>
-            <div class="ct-status"><div class="ct-dot" id="ct-dot"></div> Online · Siap membantu</div>
+            <div class="ct-name" id="ct-name">Kak Taksaka <span class="ct-mode-badge default" id="ct-mode-badge">💬 Default</span></div>
+            <div class="ct-status"><div class="ct-dot" id="ct-dot"></div> <span id="ct-status-text">Online · Siap membantu</span></div>
+          </div>
+          <div id="ct-multi-indicator" class="multi-ai-indicator" style="display:none">
+            <span style="width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 6px var(--teal);display:inline-block"></span>
+            <span id="ct-model-name">Gemma 7B</span>
           </div>
           <button class="btn-clr" onclick="clearChat()">🗑 Hapus</button>
         </div>
@@ -634,6 +714,23 @@ marked.setOptions({ breaks: true, gfm: true, headerIds: false, mangle: false });
 let token = null, currentUser = null, persona = 'taksaka';
 let file = null, fileB64 = null, loading = false;
 let usageData = { used: 0, daily: 40 };
+let aiMode = 'default';
+let useMultiAI = false;
+let multiModel = 'gemma';
+
+const AI_MODES = {
+  default:   { label: '💬 Default',   badge: 'default',  prompt: '' },
+  research:  { label: '🔍 Research',  badge: 'research', prompt: '\n\n[MODE: Research] Berikan jawaban yang mendalam, terstruktur, dan berbasis fakta. Sertakan sumber atau referensi jika relevan. Gunakan heading dan poin-poin terorganisir.' },
+  coding:    { label: '💻 Coding',    badge: 'coding',   prompt: '\n\n[MODE: Coding] Fokus pada solusi teknis dan kode. Berikan penjelasan kode yang jelas, gunakan syntax highlighting markdown, dan pertimbangkan best practices serta edge cases.' },
+  creative:  { label: '✨ Creative',  badge: 'creative', prompt: '\n\n[MODE: Creative] Gunakan imajinasi dan kreativitas. Buat konten yang engaging, unik, dan penuh gaya. Berani eksplorasi ide-ide segar dan tidak konvensional.' },
+  tugas:     { label: '📋 Tugas',     badge: 'tugas',    prompt: '\n\n[MODE: Tugas] Bantu dengan tugas sekolah/kuliah secara terstruktur. Jelaskan konsep dengan mudah dipahami, berikan contoh, dan bantu proses belajar bukan sekadar jawaban.' }
+};
+
+const MULTI_MODELS = {
+  gemma:   { label: 'Gemma 7B' },
+  llama:   { label: 'LLaMA 3 8B' },
+  mistral: { label: 'Mistral 7B' }
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   const saved = localStorage.getItem('tk_token');
@@ -830,19 +927,24 @@ function showChatWelcome() {
   const msgs=document.getElementById('messages');
   const firstName=currentUser?.nama?.split(' ')[0]||'Kamu';
   const isKak=persona==='taksaka';
+  const modeChips = {
+    default:  ['📚 Bantu belajar','💬 Ceritakan harimu','😔 Aku lagi stres','✨ Rekomendasiin sesuatu','📋 Buat surat','🧠 Quiz seru'],
+    research: ['🔍 Jelaskan sejarah Pagaska','📊 Analisis organisasi paskibra','🌐 Riset tentang paskibraka nasional','📖 Sumber belajar kepaskibraan'],
+    coding:   ['💻 Buat script Python sederhana','🔧 Debug kode ini','🌐 Buat halaman HTML','📱 Cara buat REST API'],
+    creative: ['✍️ Tulis puisi tentang bendera','🎭 Buat cerita pendek','🎨 Deskripsi desain poster','🎵 Lirik lagu semangat'],
+    tugas:    ['📐 Jelaskan rumus matematika','🧪 Konsep fisika','📝 Bantu essay bahasa Indonesia','🗺️ Materi geografi']
+  };
+  const chips = (modeChips[aiMode]||modeChips.default).map(c=>`<div class="chip" onclick="useChip(this)">${c}</div>`).join('');
+  const modeInfo = aiMode!=='default' ? `<div style="margin-top:-4px;margin-bottom:8px;font-size:11px;font-family:var(--cinzel);padding:4px 12px;border-radius:99px;border:1px solid var(--border2);color:var(--muted);display:inline-block">Mode: ${AI_MODES[aiMode]?.label||''}</div>` : '';
+  const multiInfo = useMultiAI ? `<div style="font-size:11px;color:var(--teal);font-family:var(--cinzel);margin-top:4px">✦ Multi-AI: ${MULTI_MODELS[multiModel]?.label} aktif</div>` : '';
   msgs.innerHTML=`
     <div class="chat-welcome" id="chat-welcome">
       <img class="cw-char" src="${isKak?'taksaka.webp':'dokter.webp'}" alt="Taksaka"/>
       <div class="cw-title">Halo, <span>${esc(firstName)}!</span></div>
+      ${modeInfo}
       <div class="cw-sub">Aku ${isKak?'Kak':'Dokter'} Taksaka, ${isKak?'siap bantu apa aja':'siap dengerin kamu'}. Mau ngobrol apa hari ini?</div>
-      <div class="chips">
-        <div class="chip" onclick="useChip(this)">📚 Bantu belajar</div>
-        <div class="chip" onclick="useChip(this)">💬 Ceritakan harimu</div>
-        <div class="chip" onclick="useChip(this)">😔 Aku lagi stres</div>
-        <div class="chip" onclick="useChip(this)">✨ Rekomendasiin sesuatu</div>
-        <div class="chip" onclick="useChip(this)">📋 Buat surat</div>
-        <div class="chip" onclick="useChip(this)">🧠 Quiz seru</div>
-      </div>
+      ${multiInfo}
+      <div class="chips">${chips}</div>
     </div>`;
 }
 
@@ -889,38 +991,56 @@ async function sendMessage(){
   hideWelcome();
   addMsgEl('user',msg||`[File: ${file?.name}]`,file?.type.startsWith('image/')?fileB64:null);
   const fSnap=file; ta.value='';ta.style.height='auto';rmFile(); setLoad(true);
-  const fullMsg=msg+(fSnap?`\n[File: ${fSnap.name}]`:'');
+  let fullMsg=msg+(fSnap?`\n[File: ${fSnap.name}]`:'');
+
+  // Append mode prompt if not default
+  if(aiMode!=='default' && AI_MODES[aiMode]) {
+    fullMsg += AI_MODES[aiMode].prompt;
+  }
+
   const tyEl=showTyping();
   try {
-    const res=await fetch(`${API}/api/chat/gemini`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({message:fullMsg||'Tolong analisis ini.',persona})});
-    const d=await res.json(); tyEl.remove();
-    if(res.status===401){doLogout();toast('Sesi habis. Login ulang.','err');return;}
-    if(res.status===403){
-      document.getElementById('messages').innerHTML=`<div class="suspended-banner"><div class="sb-icon">${d.type==='banned'?'🚫':'⏸'}</div><div class="sb-title">${d.type==='banned'?'Akun Dibanned':'Akun Disuspend'}</div><div class="sb-reason">${esc(d.error)}</div></div>`;
-      return;
+    if(useMultiAI) {
+      // Hit /api/chat/multi-ai — no auth needed per backend
+      const res=await fetch(`${API}/api/chat/multi-ai`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({message:fullMsg||'Halo!',model:multiModel})});
+      const d=await res.json(); tyEl.remove();
+      if(!res.ok){addMsgEl('ai','⚠️ '+(d.error||'Multi-AI gagal.'));toast(d.error||'Error','err');return;}
+      addMsgEl('ai',d.reply,null,null,null,'multi');
+    } else {
+      const res=await fetch(`${API}/api/chat/gemini`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({message:fullMsg||'Tolong analisis ini.',persona})});
+      const d=await res.json(); tyEl.remove();
+      if(res.status===401){doLogout();toast('Sesi habis. Login ulang.','err');return;}
+      if(res.status===403){
+        document.getElementById('messages').innerHTML=`<div class="suspended-banner"><div class="sb-icon">${d.type==='banned'?'🚫':'⏸'}</div><div class="sb-title">${d.type==='banned'?'Akun Dibanned':'Akun Disuspend'}</div><div class="sb-reason">${esc(d.error)}</div></div>`;
+        return;
+      }
+      if(!res.ok){addMsgEl('ai','⚠️ '+(d.error||'Terjadi kesalahan.'));toast(res.status===429?'Limit harian habis!':d.error||'Error','err');return;}
+      addMsgEl('ai',d.reply);
+      usageData={used:d.usage.used,daily:d.usage.daily}; updateUsageUI();
     }
-    if(!res.ok){addMsgEl('ai','⚠️ '+(d.error||'Terjadi kesalahan.'));toast(res.status===429?'Limit harian habis!':d.error||'Error','err');return;}
-    addMsgEl('ai',d.reply);
-    usageData={used:d.usage.used,daily:d.usage.daily}; updateUsageUI();
   } catch { tyEl.remove(); addMsgEl('ai','⚠️ Gagal terhubung ke server.'); toast('Gagal terhubung.','err'); }
   finally { setLoad(false); }
 }
 
-function addMsgEl(role,text,imgSrc,timeStr,pKey){
+function addMsgEl(role,text,imgSrc,timeStr,pKey,source){
   const msgs=document.getElementById('messages'); const isAI=role==='ai';
+  const isMulti=source==='multi';
   const pk=pKey||persona;
   const time=timeStr||new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-  const who=isAI?(pk==='taksaka'?'Kak Taksaka':'Dokter Taksaka'):(currentUser?.nama?.split(' ')[0]||'Kamu');
+  const modelLabel=MULTI_MODELS[multiModel]?.label||'Multi-AI';
+  const who=isMulti?modelLabel:isAI?(pk==='taksaka'?'Kak Taksaka':'Dokter Taksaka'):(currentUser?.nama?.split(' ')[0]||'Kamu');
   const avSrc=pk==='taksaka'?'taksaka.webp':'dokter.webp';
-  const bubbleCls=isAI?(pk==='dokter'?'ai teal-ai':'ai'):'user';
+  const bubbleCls=isAI?(isMulti?'ai teal-ai':pk==='dokter'?'ai teal-ai':'ai'):'user';
   const content=isAI?marked.parse(text):`<p>${esc(text).replace(/\n/g,'<br/>')}</p>`;
   const userAvImg=document.getElementById('profil-avatar-img');
   const userAvContent=userAvImg&&userAvImg.style.display!=='none'?`<img src="${userAvImg.src}" alt="Me" style="width:100%;height:100%;object-fit:cover"/>`:' 🙂';
+  const multiLabel=isMulti?`<span style="display:inline-flex;align-items:center;gap:3px;font-size:9px;font-family:var(--cinzel);color:var(--teal);margin-left:6px;padding:1px 6px;border-radius:99px;border:1px solid rgba(78,205,196,.3);background:rgba(78,205,196,.06)">✦ ${modelLabel}</span>`:'';
+  const aiAvEl=isMulti?`<div class="m-av" style="background:linear-gradient(135deg,rgba(78,205,196,.15),rgba(78,205,196,.05));border:1px solid rgba(78,205,196,.3);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🤖</div>`:`<div class="m-av"><img src="${avSrc}" alt="${who}"/></div>`;
   const d=document.createElement('div'); d.className='msg-group';
   d.innerHTML=`<div class="msg ${isAI?'':'user'}">
-    ${isAI?`<div class="m-av"><img src="${avSrc}" alt="${who}"/></div>`:'<div class="m-av-spacer"></div>'}
+    ${isAI?aiAvEl:'<div class="m-av-spacer"></div>'}
     <div class="m-body">
-      <div class="m-who">${who}</div>
+      <div class="m-who">${who}${multiLabel}</div>
       ${imgSrc?`<img class="m-img" src="${imgSrc}"/>`:''}
       <div class="m-bubble ${bubbleCls}">${content}</div>
       <div class="m-time">${time}</div>
@@ -1106,6 +1226,60 @@ function initNavState() {
     btn.textContent = '›';
     btn.style.left = '8px';
   }
+}
+
+function selectMode(el) {
+  document.querySelectorAll('.mode-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  aiMode = el.dataset.mode;
+  const modeData = AI_MODES[aiMode];
+  // Update topbar badge
+  const badge = document.getElementById('ct-mode-badge');
+  if(badge) {
+    badge.textContent = modeData.label;
+    badge.className = `ct-mode-badge ${modeData.badge}`;
+  }
+  // Update status text
+  const statusTexts = {
+    default: 'Online · Siap membantu',
+    research: 'Mode Research · Analisis mendalam',
+    coding: 'Mode Coding · Technical focus',
+    creative: 'Mode Creative · Imajinasi bebas',
+    tugas: 'Mode Tugas · Bantu belajar'
+  };
+  setEl('ct-status-text', statusTexts[aiMode] || 'Online · Siap membantu');
+  toast(`Mode: ${modeData.label}`, 'ok');
+}
+
+function toggleMultiAI() {
+  useMultiAI = !useMultiAI;
+  const btn = document.getElementById('btn-multi-toggle');
+  const dot = document.getElementById('multi-dot');
+  const label = document.getElementById('multi-toggle-label');
+  const indicator = document.getElementById('ct-multi-indicator');
+  const multiStatus = document.getElementById('cs-multi-status');
+  if(useMultiAI) {
+    btn.classList.add('active');
+    dot.style.background='var(--teal)';dot.style.boxShadow='0 0 6px var(--teal)';
+    label.textContent = 'Multi-AI Aktif ✓';
+    if(indicator) indicator.style.display='inline-flex';
+    if(multiStatus) multiStatus.textContent = '✦ Mode Multi-AI aktif — tanpa limit!';
+    toast(`Multi-AI aktif: ${MULTI_MODELS[multiModel].label}`, 'ok');
+  } else {
+    btn.classList.remove('active');
+    dot.style.background='';dot.style.boxShadow='';
+    label.textContent = 'Gunakan Multi-AI';
+    if(indicator) indicator.style.display='none';
+    if(multiStatus) multiStatus.textContent='';
+    toast('Kembali ke Taksaka AI', '');
+  }
+}
+
+function onModelChange() {
+  multiModel = document.getElementById('multi-model-select').value;
+  const modelLabel = document.getElementById('ct-model-name');
+  if(modelLabel) modelLabel.textContent = MULTI_MODELS[multiModel]?.label || multiModel;
+  if(useMultiAI) toast(`Model: ${MULTI_MODELS[multiModel].label}`, 'ok');
 }
 
 function toggleChatSidebar(){document.getElementById('chat-sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show');}
