@@ -747,8 +747,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const d = await res.json(); token = saved; currentUser = d.user;
         showApp();
         await Promise.all([loadProfile(), loadAnnouncements()]);
-        const path = location.pathname.replace('/','') || 'beranda';
-        navigate(['beranda','chat','riwayat','leaderboard','profil'].includes(path) ? path : 'beranda', true);
+        navigate(getInitialPage(), true);
         return;
       }
     } catch {}
@@ -798,14 +797,30 @@ function navigate(page, replace=false) {
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pageEl=document.getElementById(`page-${page}`); if(pageEl) pageEl.classList.add('active');
   const navEl=document.querySelector(`[data-page="${page}"]`); if(navEl) navEl.classList.add('active');
-  const url=`/${page}`;
-  replace ? history.replaceState({page},'',url) : history.pushState({page},'',url);
+  // Pakai hash routing (#chat, #beranda, dll) agar tidak 404 saat reload/kembali dari background
+  const hash = `#${page}`;
+  if(replace) history.replaceState({page},'',hash);
+  else history.pushState({page},'',hash);
   if(page==='riwayat') loadRiwayat();
   if(page==='leaderboard') loadLeaderboard();
   if(page==='chat' && document.getElementById('messages').children.length===0) showChatWelcome();
   closeOverlay();
 }
-window.onpopstate = e => { if(e.state?.page) navigate(e.state.page,true); };
+window.onpopstate = e => {
+  if(e.state?.page) navigate(e.state.page, true);
+  else {
+    // Fallback: baca hash dari URL
+    const hash = location.hash.replace('#','');
+    const valid = ['beranda','chat','riwayat','leaderboard','profil'];
+    navigate(valid.includes(hash) ? hash : 'beranda', true);
+  }
+};
+// Saat pertama load: baca hash dari URL (misal user bookmark #chat)
+function getInitialPage() {
+  const hash = location.hash.replace('#','');
+  const valid = ['beranda','chat','riwayat','leaderboard','profil'];
+  return valid.includes(hash) ? hash : 'beranda';
+}
 
 async function loadProfile() {
   if(!token) return;
@@ -932,6 +947,23 @@ function selectPersona(card) {
 function showChatWelcome() {
   const msgs=document.getElementById('messages');
   const firstName=currentUser?.nama?.split(' ')[0]||'Kamu';
+
+  // Jika Multi-AI aktif, tampilkan welcome screen Multi-AI — bukan Taksaka
+  if(useMultiAI) {
+    const modelInfo = MULTI_MODELS[multiModel] || { label: 'Multi-AI' };
+    const multiChips = ['💻 Buat kode HTML/CSS','🔍 Jelaskan konsep AI','📝 Tulis esai pendek','🧮 Hitung matematika','🌐 Terjemahkan teks','🐍 Script Python'];
+    const chips = multiChips.map(c=>`<div class="chip" onclick="useChip(this)">${c}</div>`).join('');
+    msgs.innerHTML=`
+      <div class="chat-welcome" id="chat-welcome">
+        <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,rgba(78,205,196,.2),rgba(78,205,196,.05));border:2px solid rgba(78,205,196,.4);display:flex;align-items:center;justify-content:center;font-size:36px;filter:drop-shadow(0 0 20px rgba(78,205,196,.3))">🤖</div>
+        <div class="cw-title"><span style="color:var(--teal-l)">${modelInfo.label}</span></div>
+        <div style="font-size:10px;font-family:var(--cinzel);padding:3px 12px;border-radius:99px;border:1px solid rgba(78,205,196,.3);background:rgba(78,205,196,.06);color:var(--teal)">Multi-AI · Bukan Taksaka AI · Tanpa limit</div>
+        <div class="cw-sub">Halo ${esc(firstName)}! Ini model <b>${modelInfo.label}</b> — AI alternatif tanpa persona Pagaska. Bebas tanya apa saja.</div>
+        <div class="chips">${chips}</div>
+      </div>`;
+    return;
+  }
+
   const isKak=persona==='taksaka';
   const modeChips = {
     default:  ['📚 Bantu belajar','💬 Ceritakan harimu','😔 Aku lagi stres','✨ Rekomendasiin sesuatu','📋 Buat surat','🧠 Quiz seru'],
