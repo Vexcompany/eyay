@@ -183,6 +183,10 @@ body.nav-collapsed #nav-toggle{left:0px}
 .model-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
 .model-select option{background:#181b22;font-family:var(--body);font-size:13px}
 .model-select-arrow{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:9px}
+.model-logo-row{display:flex;gap:8px;margin-top:8px;margin-bottom:6px}
+.model-logo-btn{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.model-logo-btn:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:0 4px 12px rgba(78,205,196,.15)}
+.model-logo-btn.active{border-color:var(--teal);background:rgba(78,205,196,.1);box-shadow:0 0 0 2px rgba(78,205,196,.2)}
 .multi-ai-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:99px;font-size:9px;font-family:var(--cinzel);letter-spacing:.5px;border:1px solid rgba(78,205,196,.3);background:rgba(78,205,196,.06);color:var(--teal);margin-bottom:6px}
 .multi-ai-desc{font-size:10px;color:var(--muted);line-height:1.55;margin-bottom:6px}
 .btn-multi-toggle{width:100%;padding:8px 10px;background:transparent;border:1px solid var(--border2);border-radius:var(--rs);color:var(--text2);font-family:var(--cinzel);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -568,6 +572,18 @@ body.nav-collapsed #nav-toggle{left:0px}
             <div class="p-info"><div class="p-name">Dokter Taksaka</div><div class="p-desc">Dukungan emosional</div></div>
             <div class="p-radio"></div>
           </div>
+          <div class="p-card" style="border-color:rgba(180,100,220,.35);background:linear-gradient(90deg,rgba(180,100,220,.06),transparent)" data-persona="vynaa" onclick="selectPersona(this)">
+            <div class="p-char" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#9b4fd8,#c76ef5);box-shadow:0 0 12px rgba(180,100,220,.4)">
+              <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="url(#vg)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <defs><radialGradient id="vg" cx="50%" cy="30%" r="70%"><stop offset="0%" stop-color="#e0aaff"/><stop offset="100%" stop-color="#7b2fff"/></radialGradient></defs>
+                <path d="M10 10 L16 22 L22 10" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <circle cx="16" cy="10" r="1.8" fill="white"/>
+              </svg>
+            </div>
+            <div class="p-info"><div class="p-name" style="color:#d89ef5">Vynaa</div><div class="p-desc">AI khusus Vynaa</div></div>
+            <div class="p-radio" style="border-color:rgba(180,100,220,.5)"></div>
+          </div>
         </div>
 
         <!-- AI MODE (untuk Taksaka AI) -->
@@ -596,11 +612,37 @@ body.nav-collapsed #nav-toggle{left:0px}
           <div style="font-size:10px;color:var(--muted);margin-bottom:8px;line-height:1.5">Model AI berbeda (bukan Taksaka). Tanpa persona Pagaska, tanpa limit harian.</div>
           <div class="model-select-wrap">
             <select class="model-select" id="multi-model-select" onchange="onModelChange()">
-              <option value="gemma">🔷 Gemma 7B (Default)</option>
-              <option value="llama">🦙 LLaMA 3 8B</option>
-              <option value="mistral">⚡ Mistral 7B v0.2</option>
+              <option value="gemma">Gemma 7B (Default)</option>
+              <option value="llama">LLaMA 3 8B</option>
+              <option value="mistral">Mistral 7B v0.2</option>
             </select>
             <div class="model-select-arrow">▼</div>
+          </div>
+          <div class="model-logo-row" id="model-logo-row">
+            <div class="model-logo-btn active" data-model="gemma" onclick="selectModelLogo(this,'gemma')" title="Gemma 7B">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="#1a73e8"/>
+                <path d="M16 8C11.58 8 8 11.58 8 16s3.58 8 8 8c4.07 0 7.44-3.05 7.94-7h-4.08c-.45 1.69-1.98 2.93-3.86 2.93-2.21 0-4-1.79-4-4s1.79-4 4-4c1.1 0 2.09.44 2.81 1.16l-2.12 2.12H24V8l-2.83 2.83C19.81 9.07 18 8 16 8z" fill="white"/>
+              </svg>
+            </div>
+            <div class="model-logo-btn" data-model="llama" onclick="selectModelLogo(this,'llama')" title="LLaMA 3 8B">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="#0866ff"/>
+                <path d="M20.5 9.5C19.4 9.5 18.5 10.1 18 11c-.5-.9-1.4-1.5-2.5-1.5-1.7 0-3 1.3-3 3 0 .4.1.8.2 1.1L16 22l3.3-8.4c.1-.3.2-.7.2-1.1 0-1.7-1.3-3-3-3zM13 12.5c0-1.4 1.1-2.5 2.5-2.5.8 0 1.5.4 2 1 .5-.6 1.2-1 2-1 1.4 0 2.5 1.1 2.5 2.5 0 .3-.1.6-.2.9L19 20l-3 0-2.8-6.6c-.1-.3-.2-.6-.2-.9z" fill="white"/>
+              </svg>
+            </div>
+            <div class="model-logo-btn" data-model="mistral" onclick="selectModelLogo(this,'mistral')" title="Mistral 7B">
+              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="15" fill="#f7531d"/>
+                <rect x="8" y="9" width="5" height="5" rx="1" fill="white"/>
+                <rect x="14" y="9" width="5" height="5" rx="1" fill="white"/>
+                <rect x="20" y="9" width="4" height="5" rx="1" fill="white"/>
+                <rect x="8" y="15" width="5" height="5" rx="1" fill="white"/>
+                <rect x="14" y="15" width="5" height="5" rx="1" fill="white"/>
+                <rect x="8" y="21" width="5" height="3" rx="1" fill="white"/>
+                <rect x="14" y="21" width="5" height="3" rx="1" fill="white"/>
+              </svg>
+            </div>
           </div>
           <button class="btn-multi-toggle" id="btn-multi-toggle" onclick="toggleMultiAI()">
             <div class="multi-dot" id="multi-dot"></div>
@@ -737,6 +779,12 @@ const MULTI_MODELS = {
   llama:   { label: 'LLaMA 3 8B' },
   mistral: { label: 'Mistral 7B' }
 };
+function selectModelLogo(btn, model) {
+  document.querySelectorAll('.model-logo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('multi-model-select').value = model;
+  onModelChange();
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   const saved = localStorage.getItem('tk_token');
@@ -929,18 +977,25 @@ async function loadAnnouncements() {
 function selectPersona(card) {
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('active'));
   card.classList.add('active'); persona=card.dataset.persona;
-  const isKak=persona==='taksaka'; const img=isKak?'taksaka.webp':'dokter.webp';
-  const name=isKak?'Kak Taksaka':'Dokter Taksaka';
+  const isKak=persona==='taksaka'; const isVynaa=persona==='vynaa';
+  const img=isKak?'taksaka.webp':'dokter.webp';
+  const name=isKak?'Kak Taksaka':(isVynaa?'Vynaa':'Dokter Taksaka');
   setEl('ct-name',name);
-  document.getElementById('ct-dot').className='ct-dot'+(isKak?'':' teal');
-  document.getElementById('ct-avatar-img').src=img;
-  document.getElementById('nav-logo-img').src=img;
-  document.getElementById('beranda-char').src=img;
-  // Update welcome screen char jika masih tampil
-  const cwChar=document.querySelector('.cw-char');
-  if(cwChar) cwChar.src=img;
+  document.getElementById('ct-dot').className='ct-dot'+(isKak?'':(isVynaa?' purple':' teal'));
+  if(!isVynaa){
+    document.getElementById('ct-avatar-img').src=img;
+    document.getElementById('nav-logo-img').src=img;
+    document.getElementById('beranda-char').src=img;
+    const cwChar=document.querySelector('.cw-char');
+    if(cwChar) cwChar.src=img;
+  } else {
+    // Vynaa: use the vynaa SVG icon inline for topbar
+    document.getElementById('ct-avatar-img').src='';
+    const ctAvWrap=document.querySelector('.ct-avatar');
+    if(ctAvWrap){ctAvWrap.style.background='linear-gradient(135deg,#9b4fd8,#c76ef5)';ctAvWrap.style.display='flex';ctAvWrap.style.alignItems='center';ctAvWrap.style.justifyContent='center';}
+  }
   const cwTitle=document.querySelector('.cw-sub');
-  if(cwTitle) cwTitle.textContent=`Aku ${isKak?'Kak':'Dokter'} Taksaka, ${isKak?'siap bantu apa aja':'siap dengerin kamu'}. Mau ngobrol apa hari ini?`;
+  if(cwTitle) cwTitle.textContent=isVynaa?`Aku Vynaa, AI siap menemani kamu. Mau ngobrol apa?`:`Aku ${isKak?'Kak':'Dokter'} Taksaka, ${isKak?'siap bantu apa aja':'siap dengerin kamu'}. Mau ngobrol apa hari ini?`;
   closeOverlay();
 }
 
@@ -1044,6 +1099,11 @@ async function sendMessage(){
       const d=await res.json(); tyEl.remove();
       if(!res.ok){addMsgEl('ai','⚠️ '+(d.error||'Multi-AI gagal.'));toast(d.error||'Error','err');return;}
       addMsgEl('ai',d.reply,null,null,null,'multi');
+    } else if(persona==='vynaa') {
+      const res=await fetch(`${API}/api/chat/vynaa`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({message:fullMsg||'Halo!'})});
+      const d=await res.json(); tyEl.remove();
+      if(!res.ok){addMsgEl('ai','⚠️ '+(d.error||'Vynaa gagal merespon.'));toast(d.error||'Error','err');return;}
+      addMsgEl('ai',d.reply,null,null,null,'vynaa');
     } else {
       const res=await fetch(`${API}/api/chat/gemini`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({message:fullMsg||'Tolong analisis ini.',persona})});
       const d=await res.json(); tyEl.remove();
