@@ -160,6 +160,7 @@ body.nav-collapsed #nav-toggle{left:0px}
 .p-card.active .p-radio{background:var(--gold);border-color:var(--gold)}
 .p-card.active .p-radio::after{content:'✓';font-size:9px;color:#07060a;font-weight:700}
 .p-card.teal.active .p-radio{background:var(--teal);border-color:var(--teal)}
+.p-card.teal.active .p-radio::after{content:'✓';font-size:9px;color:#07060a;font-weight:700}
 .cs-divider{height:1px;background:var(--border)}
 .cs-usage{padding:12px 16px;flex-shrink:0}
 .cs-usage-row{display:flex;justify-content:space-between;margin-bottom:6px}
@@ -607,43 +608,43 @@ body.nav-collapsed #nav-toggle{left:0px}
             Multi-AI
             <div class="multi-ai-badge">✦ Beta</div>
           </span>
-        </div>
-        <div class="multi-ai-section">
           <div style="font-size:10px;color:var(--muted);margin-bottom:8px;line-height:1.5">Model AI berbeda (bukan Taksaka). Tanpa persona Pagaska, tanpa limit harian.</div>
-          <div class="model-select-wrap">
-            <select class="model-select" id="multi-model-select" onchange="onModelChange()">
-              <option value="gemma">Gemma 7B (Default)</option>
-              <option value="llama">LLaMA 3 8B</option>
-              <option value="mistral">Mistral 7B v0.2</option>
-            </select>
-            <div class="model-select-arrow">▼</div>
+        </div>
+        <div class="multi-ai-section" style="padding:0 16px 14px">
+          <!-- hidden select for JS compatibility -->
+          <select id="multi-model-select" style="display:none" onchange="onModelChange()">
+            <option value="gemma">Gemma 7B</option>
+            <option value="llama">LLaMA 3 8B</option>
+            <option value="mistral">Mistral 7B v0.2</option>
+          </select>
+
+          <!-- Gemma card -->
+          <div class="p-card teal model-card active" data-model="gemma" onclick="selectModelCard(this,'gemma')">
+            <div class="p-char" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#1a73e8;box-shadow:0 0 10px rgba(26,115,232,.4)">
+              <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><path d="M16 7C11.03 7 7 11.03 7 16s4.03 9 9 9c4.6 0 8.4-3.44 8.95-7.88h-4.6c-.5 1.9-2.24 3.3-4.35 3.3-2.49 0-4.5-2.01-4.5-4.5s2.01-4.5 4.5-4.5c1.24 0 2.36.5 3.17 1.3l-2.38 2.38H25V7l-3.18 3.18C20.26 8.22 18.27 7 16 7z" fill="white"/></svg>
+            </div>
+            <div class="p-info"><div class="p-name">Gemma 7B</div><div class="p-desc">Google · Serbaguna</div></div>
+            <div class="p-radio" style="border-color:rgba(78,205,196,.5)"></div>
           </div>
-          <div class="model-logo-row" id="model-logo-row">
-            <div class="model-logo-btn active" data-model="gemma" onclick="selectModelLogo(this,'gemma')" title="Gemma 7B">
-              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="15" fill="#1a73e8"/>
-                <path d="M16 8C11.58 8 8 11.58 8 16s3.58 8 8 8c4.07 0 7.44-3.05 7.94-7h-4.08c-.45 1.69-1.98 2.93-3.86 2.93-2.21 0-4-1.79-4-4s1.79-4 4-4c1.1 0 2.09.44 2.81 1.16l-2.12 2.12H24V8l-2.83 2.83C19.81 9.07 18 8 16 8z" fill="white"/>
-              </svg>
+
+          <!-- LLaMA card -->
+          <div class="p-card teal model-card" data-model="llama" onclick="selectModelCard(this,'llama')">
+            <div class="p-char" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#0866ff;box-shadow:0 0 10px rgba(8,102,255,.4)">
+              <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><path d="M20 8.5C18.8 8.5 17.8 9.2 17.2 10.2 16.6 9.2 15.6 8.5 14.4 8.5 12.5 8.5 11 10 11 11.9c0 .5.1.9.3 1.3L16 24l4.7-10.8c.2-.4.3-.8.3-1.3C21 10 19.9 8.5 20 8.5zM14.4 10c.9 0 1.7.5 2.1 1.2H16c0 0-.1 0-.1 0 .4-.7 1.2-1.2 2.1-1.2.9 0 1.6.7 1.6 1.9 0 .3-.1.6-.2.9L16 22l-3.4-9.2c-.1-.3-.2-.6-.2-.9 0-1.1.8-1.9 2-1.9z" fill="white"/></svg>
             </div>
-            <div class="model-logo-btn" data-model="llama" onclick="selectModelLogo(this,'llama')" title="LLaMA 3 8B">
-              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="15" fill="#0866ff"/>
-                <path d="M20.5 9.5C19.4 9.5 18.5 10.1 18 11c-.5-.9-1.4-1.5-2.5-1.5-1.7 0-3 1.3-3 3 0 .4.1.8.2 1.1L16 22l3.3-8.4c.1-.3.2-.7.2-1.1 0-1.7-1.3-3-3-3zM13 12.5c0-1.4 1.1-2.5 2.5-2.5.8 0 1.5.4 2 1 .5-.6 1.2-1 2-1 1.4 0 2.5 1.1 2.5 2.5 0 .3-.1.6-.2.9L19 20l-3 0-2.8-6.6c-.1-.3-.2-.6-.2-.9z" fill="white"/>
-              </svg>
-            </div>
-            <div class="model-logo-btn" data-model="mistral" onclick="selectModelLogo(this,'mistral')" title="Mistral 7B">
-              <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="16" cy="16" r="15" fill="#f7531d"/>
-                <rect x="8" y="9" width="5" height="5" rx="1" fill="white"/>
-                <rect x="14" y="9" width="5" height="5" rx="1" fill="white"/>
-                <rect x="20" y="9" width="4" height="5" rx="1" fill="white"/>
-                <rect x="8" y="15" width="5" height="5" rx="1" fill="white"/>
-                <rect x="14" y="15" width="5" height="5" rx="1" fill="white"/>
-                <rect x="8" y="21" width="5" height="3" rx="1" fill="white"/>
-                <rect x="14" y="21" width="5" height="3" rx="1" fill="white"/>
-              </svg>
-            </div>
+            <div class="p-info"><div class="p-name">LLaMA 3 8B</div><div class="p-desc">Meta · Powerful</div></div>
+            <div class="p-radio" style="border-color:rgba(78,205,196,.5)"></div>
           </div>
+
+          <!-- Mistral card -->
+          <div class="p-card teal model-card" data-model="mistral" onclick="selectModelCard(this,'mistral')">
+            <div class="p-char" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#f7531d;box-shadow:0 0 10px rgba(247,83,29,.4)">
+              <svg width="26" height="26" viewBox="0 0 32 32" fill="none"><rect x="7" y="8" width="5" height="5" rx="1.2" fill="white"/><rect x="13" y="8" width="5" height="5" rx="1.2" fill="white"/><rect x="19" y="8" width="5" height="5" rx="1.2" fill="white"/><rect x="7" y="14" width="5" height="5" rx="1.2" fill="white"/><rect x="13" y="14" width="5" height="5" rx="1.2" fill="white"/><rect x="7" y="20" width="5" height="4" rx="1.2" fill="white"/><rect x="13" y="20" width="5" height="4" rx="1.2" fill="white"/></svg>
+            </div>
+            <div class="p-info"><div class="p-name">Mistral 7B</div><div class="p-desc">Mistral · Efisien</div></div>
+            <div class="p-radio" style="border-color:rgba(78,205,196,.5)"></div>
+          </div>
+
           <button class="btn-multi-toggle" id="btn-multi-toggle" onclick="toggleMultiAI()">
             <div class="multi-dot" id="multi-dot"></div>
             <span id="multi-toggle-label">Gunakan Multi-AI</span>
@@ -784,6 +785,18 @@ function selectModelLogo(btn, model) {
   btn.classList.add('active');
   document.getElementById('multi-model-select').value = model;
   onModelChange();
+}
+function selectModelCard(card, model) {
+  document.querySelectorAll('.model-card').forEach(c=>c.classList.remove('active'));
+  card.classList.add('active');
+  multiModel = model;
+  document.getElementById('multi-model-select').value = model;
+  const modelLabel = document.getElementById('ct-model-name');
+  if(modelLabel) modelLabel.textContent = MULTI_MODELS[model]?.label || model;
+  if(useMultiAI) {
+    setEl('ct-status-text', `${MULTI_MODELS[model]?.label} · Tanpa limit harian`);
+    toast(`Model: ${MULTI_MODELS[model]?.label}`, 'ok');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -961,7 +974,7 @@ function updateUsageUI() {
 async function loadAnnouncements() {
   const el=document.getElementById('ann-list');
   try {
-    const res=await fetch(`${API}/api/admin/announcements`,{headers:{Authorization:`Bearer ${token}`}});
+    const res=await fetch(`${API}/api/announcements`,{headers:{Authorization:`Bearer ${token}`}});
     if(!res.ok) throw new Error();
     const d=await res.json(); const anns=d.announcements??[];
     if(!anns.length){el.innerHTML='<div class="ann-empty">Belum ada pengumuman.</div>';return;}
