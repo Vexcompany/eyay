@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#070809"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>Taksaka AI — Pagaska</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -25,6 +26,7 @@
   /* Layout vars */
   --sidebar-w:260px;
   --nav-h:64px; /* mobile bottom nav */
+  --nav-h-safe:calc(64px + env(safe-area-inset-bottom, 0px));
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -339,7 +341,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
 .rl-empty{padding:40px 20px;text-align:center;font-size:13px;color:var(--muted);font-family:var(--cinzel)}
 
 /* Riwayat detail */
-.riwayat-detail{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.riwayat-detail{flex:1;overflow:hidden;display:flex;flex-direction:column;position:relative}
 .rd-head{padding:14px 18px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;display:flex;align-items:center;gap:10px}
 .rd-back-btn{display:none;background:none;border:1px solid var(--border2);border-radius:var(--rs);color:var(--text2);font-family:var(--cinzel);font-size:11px;padding:6px 12px;cursor:pointer;transition:all .2s;flex-shrink:0}
 .rd-back-btn:active{opacity:.7}
@@ -492,17 +494,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
   /* Pages get bottom padding for nav bar */
   .page{padding-bottom:0}
   #page-beranda,#page-leaderboard,#page-profil{
-    padding-bottom:calc(var(--nav-h) + var(--safe-bottom));
+    padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 8px);
   }
-  #page-chat{
-    padding-bottom:0;
-  }
-  /* Input area harus berada DI ATAS bottom nav — beri margin bottom */
+  #page-riwayat{padding-bottom:0}
+  #page-chat{padding-bottom:0}
+  /* chat-main harus menyisakan ruang untuk bottom nav */
   #chat-main{
-    padding-bottom:calc(var(--nav-h) + var(--safe-bottom));
+    margin-bottom:calc(var(--nav-h) + var(--safe-bottom));
   }
-  /* Input area sendiri tetap natural, chat-main yang geser */
-  #input-area{padding-bottom:calc(10px + var(--safe-bottom))}
+  /* Input area pin ke bawah, di atas bottom nav */
+  #input-area{
+    position:sticky;
+    bottom:calc(var(--nav-h) + var(--safe-bottom));
+    padding-bottom:10px;
+    z-index:10;
+  }
+  #messages{
+    /* Beri extra padding bawah agar pesan terakhir tidak tertutup */
+    padding-bottom:20px;
+  }
 
   /* Chat sidebar becomes drawer on mobile */
   #chat-sidebar{
@@ -530,11 +540,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
   .riwayat-detail{
     position:absolute;top:0;left:0;right:0;bottom:0;
     background:var(--bg);
-    transform:translateX(100%);
+    transform:translateX(105%);
     transition:transform .3s cubic-bezier(.4,0,.2,1);
     z-index:2;
+    overflow:hidden;
   }
-  .riwayat-detail.open{transform:translateX(0)}
+  .riwayat-detail.open{
+    transform:translateX(0);
+    overflow:auto;
+  }
   .rd-back-btn{display:block!important}
 
   /* Leaderboard */
@@ -562,6 +576,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
   .beranda-title{font-size:18px}
   .m-bubble{font-size:13px}
   .mini-stat-num{font-size:18px}
+}
+
+/* DPI tinggi / font size diperbesar — bottom nav lebih tinggi */
+@media(max-width:700px) and (min-resolution:2.5dppx){
+  :root{--nav-h:72px}
+}
+@media(max-width:700px) and (min-resolution:3dppx){
+  :root{--nav-h:80px}
+}
+/* Jika user perbesar font di aksesibilitas */
+@media(max-width:700px){
+  #bottomnav{
+    min-height:calc(var(--nav-h) + var(--safe-bottom));
+    height:auto;
+  }
+  .bn-inner{min-height:var(--nav-h)}
 }
 </style>
 </head>
@@ -1351,125 +1381,221 @@ function quickChat(text){
 
 // ── RIWAYAT (per sesi) ─────────────────────────────────────────
 async function loadRiwayat(){
-  const el=document.getElementById('rl-items');
-  el.innerHTML='<div class="loading-center"><div class="spin"></div></div>';
+  const el = document.getElementById('rl-items');
+  el.innerHTML = '<div class="loading-center"><div class="spin"></div></div>';
   closeRiwayatDetail(false);
+
+  if (!token) { el.innerHTML = '<div class="rl-empty">Silakan login dulu.</div>'; return; }
+
   try {
-    if(!token){el.innerHTML='<div class="rl-empty">Silakan login dulu.</div>';return;}
-    const res=await fetch(`${API}/api/chat/history`,{headers:{Authorization:`Bearer ${token}`}});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const d=await res.json();
+    const res = await fetch(`${API}/api/chat/history`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(`HTTP ${res.status}: ${errData.error || 'Server error'}`);
+    }
+    const d = await res.json();
 
     // Support format baru (sessions[]) dan lama (history[])
-    let sessions=d.sessions;
-    if(!sessions&&d.history){
-      // Fallback: convert flat history to single session
-      sessions=d.history.length?[{session_id:'legacy',started_at:d.history[0]?.created_at,last_at:d.history[d.history.length-1]?.created_at,title:d.history.find(m=>m.role==='user')?.text||'Riwayat Chat',persona:d.history.find(m=>m.role==='assistant')?.persona||'Kak Taksaka',message_count:d.history.length,messages:d.history}]:[];
+    let sessions = d.sessions;
+
+    if (!sessions && d.history && d.history.length > 0) {
+      // Backend lama — convert flat history ke sessions berdasarkan hari
+      sessions = flatHistoryToSessions(d.history);
     }
-    sessions=sessions||[];
 
-    const totalMsg=d.total_messages||(d.history?.length)||0;
-    setEl('rl-count',`${sessions.length} sesi · ${totalMsg} pesan`);
+    sessions = sessions || [];
+    const totalMsg = d.total_messages || sessions.reduce((a,s) => a + (s.message_count||s.messages?.length||0), 0);
 
-    if(!sessions.length){el.innerHTML='<div class="rl-empty">Belum ada riwayat chat.</div>';return;}
+    setEl('rl-count', `${sessions.length} sesi · ${totalMsg} pesan`);
 
-    el.innerHTML=sessions.map((s,idx)=>{
-      const personaStr=s.persona||'';
-      const pk=personaStr.toLowerCase().includes('dokter')?'dokter':'taksaka';
-      const personaLabel=pk==='dokter'?'Dokter Taksaka':'Kak Taksaka';
-      const hasSongs=s.messages?.some(m=>m.songs&&m.songs.length>0);
-      const safeData=encodeURIComponent(JSON.stringify(s));
+    if (!sessions.length) {
+      el.innerHTML = '<div class="rl-empty">Belum ada riwayat chat.</div>';
+      return;
+    }
+
+    el.innerHTML = sessions.map((s, idx) => {
+      const personaStr = s.persona || '';
+      const pk = personaStr.toLowerCase().includes('dokter') ? 'dokter'
+               : personaStr.toLowerCase().includes('vynaa')  ? 'vynaa'
+               : 'taksaka';
+      const personaLabel = pk === 'dokter' ? 'Dokter Taksaka'
+                         : pk === 'vynaa'  ? 'Vynaa'
+                         : 'Kak Taksaka';
+      const hasSongs = s.messages?.some(m => m.songs && m.songs.length > 0);
+      const msgCount = s.message_count || s.messages?.length || 0;
+
+      // Encode session data untuk onclick — simpan hanya data yang diperlukan
+      const sessionData = {
+        session_id:   s.session_id,
+        started_at:   s.started_at,
+        last_at:      s.last_at,
+        title:        s.title,
+        persona:      s.persona,
+        message_count: msgCount,
+        messages:     s.messages || []
+      };
+      const safeData = encodeURIComponent(JSON.stringify(sessionData));
+
       return `<div class="session-item" data-idx="${idx}" data-session="${safeData}" onclick="showSessionDetail(this)">
         <div class="si-header">
-          <span class="si-persona ${pk==='dokter'?'teal':''}">${personaLabel}</span>
-          <span class="si-count">${s.message_count||0} pesan</span>
+          <span class="si-persona ${pk==='dokter'?'teal':pk==='vynaa'?'purple':''}">${personaLabel}</span>
+          <span class="si-count">${msgCount} pesan</span>
         </div>
-        <div class="si-title">${esc(s.title||'Sesi Chat')}</div>
+        <div class="si-title">${esc(s.title || 'Sesi Chat')}</div>
         <div class="si-meta">
           <span class="si-time">${fmtDate(s.last_at)}</span>
-          ${hasSongs?`<span class="si-music-badge">🎵 Musik</span>`:''}
+          ${hasSongs ? `<span class="si-music-badge">🎵 Musik</span>` : ''}
         </div>
       </div>`;
     }).join('');
-  } catch(e){
-    console.error('loadRiwayat error:',e);
-    el.innerHTML='<div class="rl-empty">Gagal memuat riwayat.</div>';
+
+  } catch(e) {
+    console.error('loadRiwayat error:', e);
+    el.innerHTML = `<div class="rl-empty">Gagal memuat riwayat.<br/><span style="font-size:11px;color:var(--dim)">${esc(e.message)}</span></div>`;
   }
+}
+
+// Helper: convert flat history array ke sessions berdasarkan hari
+function flatHistoryToSessions(history) {
+  if (!history || !history.length) return [];
+  const sessions = [];
+  let cur = null;
+  for (const msg of history) {
+    const day = new Date(msg.created_at).toDateString();
+    if (!cur || cur._day !== day) {
+      cur = {
+        session_id:    'day_' + day.replace(/ /g,'_'),
+        _day:          day,
+        started_at:    msg.created_at,
+        last_at:       msg.created_at,
+        title:         (msg.role === 'user' ? msg.text : null),
+        persona:       (msg.role === 'assistant' ? msg.persona : null) || 'Kak Taksaka',
+        message_count: 0,
+        messages:      []
+      };
+      sessions.push(cur);
+    }
+    cur.messages.push(msg);
+    cur.last_at = msg.created_at;
+    cur.message_count++;
+    if (!cur.title && msg.role === 'user') cur.title = msg.text;
+    if (!cur.persona && msg.role === 'assistant' && msg.persona) cur.persona = msg.persona;
+  }
+  return sessions.reverse();
 }
 
 function showSessionDetail(el){
   document.querySelectorAll('.session-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
+
   let session;
-  try{session=JSON.parse(decodeURIComponent(el.dataset.session));}
-  catch(e){console.error(e);return;}
+  try {
+    session = JSON.parse(decodeURIComponent(el.dataset.session));
+  } catch(e) {
+    console.error('Parse session error:', e);
+    return;
+  }
 
-  const detail=document.getElementById('riwayat-detail');
-  const body=document.getElementById('rd-body');
-  const titleEl=document.getElementById('rd-head-title');
+  const detail  = document.getElementById('riwayat-detail');
+  const body    = document.getElementById('rd-body');
+  const titleEl = document.getElementById('rd-head-title');
 
-  // Title sesi
-  if(titleEl) titleEl.textContent=session.title?.slice(0,50)||'Sesi Chat';
+  if (titleEl) titleEl.textContent = (session.title||'Sesi Chat').slice(0,60);
 
-  // Build messages
-  const msgs=session.messages||[];
-  if(!msgs.length){body.innerHTML='<div class="rd-empty"><div class="rd-empty-icon">💬</div><div class="rd-empty-text">Sesi ini kosong.</div></div>';return;}
+  const msgs = session.messages || [];
+  if (!msgs.length) {
+    body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon">💬</div><div class="rd-empty-text">Sesi ini kosong.</div></div>';
+    detail.classList.add('open');
+    return;
+  }
 
-  body.innerHTML=msgs.map((m,i)=>{
-    const isAI=m.role==='assistant';
-    // Hanya AI yang punya persona. User selalu tampilkan nama user, bukan persona AI.
-    const personaStr = isAI ? (m.persona||session.persona||'') : '';
-    const pk=personaStr.toLowerCase().includes('dokter')?'dokter':(personaStr.toLowerCase().includes('vynaa')?'vynaa':'taksaka');
-    const avSrc=pk==='taksaka'?'taksaka.webp':(pk==='vynaa'?'vynaa.png':'dokter.webp');
-    // Nama: AI pakai nama persona, User pakai nama asli
-    const userNama = currentUser?.nama?.split(' ')[0] || 'Kamu';
+  // Nama user yang login
+  const userNama = currentUser?.nama?.split(' ')[0] || 'Kamu';
+
+  body.innerHTML = msgs.map((m, i) => {
+    const isAI = m.role === 'assistant';
+
+    // Persona hanya untuk pesan AI
+    const personaStr = isAI ? (m.persona || session.persona || '') : '';
+    const pk = personaStr.toLowerCase().includes('dokter') ? 'dokter'
+             : personaStr.toLowerCase().includes('vynaa')  ? 'vynaa'
+             : 'taksaka';
+    const avSrc = pk === 'dokter' ? 'dokter.webp'
+                : pk === 'vynaa'  ? 'vynaa.png'
+                : 'taksaka.webp';
+
+    // Label nama
     const who = isAI
-      ? (m.persona || (pk==='dokter'?'Dokter Taksaka':(pk==='vynaa'?'Vynaa':'Kak Taksaka')))
+      ? (m.persona || (pk==='dokter' ? 'Dokter Taksaka' : pk==='vynaa' ? 'Vynaa' : 'Kak Taksaka'))
       : userNama;
-    const content=isAI?marked.parse(m.text):`<p>${esc(m.text)}</p>`;
-    const bubCls=isAI?(pk==='dokter'?'ai teal':'ai'):'user';
 
-    // Tanggal separator
-    let dateSep='';
-    if(i===0||(i>0&&new Date(m.created_at).toDateString()!==new Date(msgs[i-1].created_at).toDateString())){
-      dateSep=`<div class="date-sep">${new Date(m.created_at).toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'})}</div>`;
+    // Render konten
+    let content;
+    try {
+      content = isAI ? marked.parse(m.text || '') : `<p>${esc(m.text || '')}</p>`;
+    } catch { content = `<p>${esc(m.text || '')}</p>`; }
+
+    const bubCls = isAI ? (pk === 'dokter' ? 'ai teal' : 'ai') : 'user';
+
+    // Separator tanggal
+    let dateSep = '';
+    const curDate  = new Date(m.created_at);
+    const prevDate = i > 0 ? new Date(msgs[i-1].created_at) : null;
+    if (i === 0 || (prevDate && curDate.toDateString() !== prevDate.toDateString())) {
+      dateSep = `<div class="date-sep">${curDate.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>`;
     }
 
-    // Music cards dalam sesi
-    let musicHtml='';
-    if(isAI&&m.songs&&m.songs.length>0){
-      const moodEmoji={healing:'🌿',semangat:'⚡',santai:'☁️',romantis:'🌹',fokus:'🎯'};
-      musicHtml=`<div style="margin-top:6px"><div class="music-cards">${m.songs.map(s=>`
-        <div class="music-card" onclick="playMusic('${esc(s.url||'')}','${esc(s.title)}')">
-          <div class="mc-cover">${s.cover?`<img src="${esc(s.cover)}" alt=""/>`:'🎵'}</div>
-          <div class="mc-info"><div class="mc-title">${esc(s.title)}</div><div class="mc-artist">${esc(s.artist)}</div></div>
-          ${s.url?`<button class="mc-play" onclick="event.stopPropagation();playMusic('${esc(s.url)}','${esc(s.title)}')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>`:''}
+    // Music cards
+    let musicHtml = '';
+    if (isAI && m.songs && m.songs.length > 0) {
+      musicHtml = `<div style="margin-top:8px"><div class="music-cards">${m.songs.map(s => `
+        <div class="music-card" onclick="playMusic('${esc(s.url||'')}','${esc(s.title||'')}')">
+          <div class="mc-cover">${s.cover ? `<img src="${esc(s.cover)}" alt="" onerror="this.style.display='none'"  />` : '🎵'}</div>
+          <div class="mc-info">
+            <div class="mc-title">${esc(s.title||'Unknown')}</div>
+            <div class="mc-artist">${esc(s.artist||'Pagaska Music')}</div>
+          </div>
+          ${s.url ? `<button class="mc-play" onclick="event.stopPropagation();playMusic('${esc(s.url)}','${esc(s.title||'')}')"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>` : ''}
         </div>`).join('')}</div></div>`;
     }
 
-    return `${dateSep}<div class="rd-msg ${isAI?'':'user'}">
-      ${isAI?`<div class="rd-av"><img src="${avSrc}" alt=""/></div>`:'<div class="rd-av-spacer"></div>'}
+    const timeStr = (() => {
+      try { return new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
+      catch { return ''; }
+    })();
+
+    // Avatar user pakai foto profil jika ada
+    const pImg = document.getElementById('profil-avatar-img');
+    const userAvHtml = (pImg && pImg.style.display !== 'none')
+      ? `<div class="rd-av"><img src="${pImg.src}" alt="" style="width:100%;height:100%;object-fit:cover"/></div>`
+      : `<div class="rd-av">🙂</div>`;
+
+    return `${dateSep}
+    <div class="rd-msg ${isAI ? '' : 'user'}">
+      ${isAI ? `<div class="rd-av"><img src="${avSrc}" alt="${who}"/></div>` : '<div class="rd-av-spacer"></div>'}
       <div class="rd-body-msg">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:3px;font-family:var(--cinzel)">${esc(who)}</div>
         <div class="rd-bubble ${bubCls}">${content}${musicHtml}</div>
-        <div class="rd-time">${new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="rd-time">${timeStr}</div>
       </div>
-      ${!isAI?`<div class="rd-av">🙂</div>`:''}
+      ${!isAI ? userAvHtml : ''}
     </div>`;
   }).join('');
 
-  // Mobile: slide open
+  // Slide open (mobile) atau langsung tampil (desktop)
   detail.classList.add('open');
-  body.scrollTop=body.scrollHeight;
+  // Scroll ke bawah setelah render
+  requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
 }
 
-function closeRiwayatDetail(animate=true){
-  const detail=document.getElementById('riwayat-detail');
+function closeRiwayatDetail(animate=true) {
+  const detail = document.getElementById('riwayat-detail');
   detail.classList.remove('open');
-  if(!animate){
-    const body=document.getElementById('rd-body');
-    if(body) body.innerHTML='<div class="rd-empty"><div class="rd-empty-icon">💬</div><div class="rd-empty-text">Pilih sesi untuk melihat percakapan</div></div>';
+  if (!animate) {
+    const body = document.getElementById('rd-body');
+    if (body) body.innerHTML = '<div class="rd-empty"><div class="rd-empty-icon">💬</div><div class="rd-empty-text">Pilih sesi untuk melihat percakapan</div></div>';
   }
-  document.querySelectorAll('.session-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.session-item').forEach(i => i.classList.remove('active'));
 }
 
 // ── LEADERBOARD ───────────────────────────────────────────────
