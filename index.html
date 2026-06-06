@@ -497,7 +497,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
   #page-chat{
     padding-bottom:0;
   }
-  /* Chat input area already at bottom, just needs nav offset */
+  /* Input area harus berada DI ATAS bottom nav — beri margin bottom */
+  #chat-main{
+    padding-bottom:calc(var(--nav-h) + var(--safe-bottom));
+  }
+  /* Input area sendiri tetap natural, chat-main yang geser */
   #input-area{padding-bottom:calc(10px + var(--safe-bottom))}
 
   /* Chat sidebar becomes drawer on mobile */
@@ -1147,9 +1151,16 @@ function selectMode(el) {
 function showChatWelcome() {
   const msgs=document.getElementById('messages');
   const firstName=currentUser?.nama?.split(' ')[0]||'Kamu';
-  const isKak=persona==='taksaka'; const isVynaa=persona==='vynaa';
+  const isKak=persona==='taksaka'; const isVynaa=persona==='vynaa'; const isDokter=persona==='dokter';
   const charSrc=isVynaa?'vynaa.png':(isKak?'taksaka.webp':'dokter.webp');
-  const greetSub=isVynaa?`Aku Vynaa, AI siap menemani kamu.`:`Aku ${isKak?'Kak':'Dokter'} Taksaka, ${isKak?'siap bantu apa aja':'siap dengerin kamu'}. Mau ngobrol apa hari ini?`;
+
+  // Nama persona sesuai yang aktif
+  const personaName = isVynaa ? 'Vynaa' : (isKak ? 'Kak Taksaka' : 'Dokter Taksaka');
+  const greetSub = isVynaa
+    ? `Aku <strong>Vynaa</strong>, AI siap menemani kamu. Mau ngobrol apa?`
+    : isDokter
+      ? `Aku <strong>Dokter Taksaka</strong>, siap dengerin dan mendukung kamu. Mau cerita apa hari ini?`
+      : `Aku <strong>Kak Taksaka</strong>, siap bantu apa aja. Mau ngobrol apa hari ini?`;
   const modeChips={
     default:  ['📚 Bantu belajar','😔 Lagi stres nih','🎵 Rekomendasiin lagu','💪 Semangatin aku','✨ Rekomendasiin sesuatu','📋 Buat surat'],
     research: ['🔍 Jelaskan sejarah Pagaska','📊 Analisis paskibra','🌐 Riset paskibraka nasional'],
@@ -1406,10 +1417,15 @@ function showSessionDetail(el){
 
   body.innerHTML=msgs.map((m,i)=>{
     const isAI=m.role==='assistant';
-    const personaStr=m.persona||session.persona||'';
-    const pk=personaStr.toLowerCase().includes('dokter')?'dokter':'taksaka';
-    const avSrc=pk==='taksaka'?'taksaka.webp':'dokter.webp';
-    const who=isAI?(m.persona||(pk==='dokter'?'Dokter Taksaka':'Kak Taksaka')):(currentUser?.nama?.split(' ')[0]||'Kamu');
+    // Hanya AI yang punya persona. User selalu tampilkan nama user, bukan persona AI.
+    const personaStr = isAI ? (m.persona||session.persona||'') : '';
+    const pk=personaStr.toLowerCase().includes('dokter')?'dokter':(personaStr.toLowerCase().includes('vynaa')?'vynaa':'taksaka');
+    const avSrc=pk==='taksaka'?'taksaka.webp':(pk==='vynaa'?'vynaa.png':'dokter.webp');
+    // Nama: AI pakai nama persona, User pakai nama asli
+    const userNama = currentUser?.nama?.split(' ')[0] || 'Kamu';
+    const who = isAI
+      ? (m.persona || (pk==='dokter'?'Dokter Taksaka':(pk==='vynaa'?'Vynaa':'Kak Taksaka')))
+      : userNama;
     const content=isAI?marked.parse(m.text):`<p>${esc(m.text)}</p>`;
     const bubCls=isAI?(pk==='dokter'?'ai teal':'ai'):'user';
 
