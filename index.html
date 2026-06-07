@@ -577,6 +577,315 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
   .m-bubble{font-size:13px}
   .mini-stat-num{font-size:18px}
 }
+/* ═══════════════════════════════════════════════════════════
+   RYXA STORIES
+═══════════════════════════════════════════════════════════ */
+#page-stories{overflow:hidden;flex-direction:row}
+
+/* Stories sidebar */
+#stories-sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  background:var(--surface);overflow:hidden;
+}
+.ss-head{
+  padding:16px;border-bottom:1px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,rgba(168,85,247,.08),transparent);
+}
+.ss-close-btn{display:none;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:2px;line-height:1;flex-shrink:0}
+.ss-title{font-family:var(--cinzel);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--music-l);text-transform:uppercase;flex:1}
+.ss-char-wrap{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.ss-char{
+  width:100px;height:100px;object-fit:contain;object-position:top;
+  filter:drop-shadow(0 0 24px rgba(168,85,247,.5));
+  animation:charFloat 4s ease-in-out infinite;
+}
+.ss-char-name{font-family:var(--cinzel);font-size:15px;font-weight:700;color:var(--music-l);letter-spacing:1px}
+.ss-char-role{font-size:11px;color:var(--muted);text-align:center;line-height:1.5}
+.ss-motto{
+  font-size:10px;font-style:italic;color:var(--music);
+  text-align:center;padding:0 8px;line-height:1.6;
+  font-family:var(--cinzel);letter-spacing:.3px;
+}
+.ss-usage{padding:12px 16px;flex-shrink:0}
+.ss-usage-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.ss-usage-lbl{font-size:11px;color:var(--muted)}
+.ss-usage-num{font-size:11px;font-family:var(--cinzel);color:var(--music-l)}
+.ss-actions{padding:10px 16px;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:7px;margin-top:auto}
+.btn-new-story{
+  width:100%;padding:10px;
+  background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(168,85,247,.08));
+  border:1px solid rgba(168,85,247,.4);border-radius:var(--rs);
+  color:var(--music-l);font-family:var(--cinzel);font-size:10px;
+  font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.btn-new-story:hover{background:rgba(168,85,247,.25);border-color:rgba(168,85,247,.6)}
+.btn-story-history{
+  width:100%;padding:9px;background:transparent;
+  border:1px solid var(--border2);border-radius:var(--rs);
+  color:var(--text2);font-family:var(--cinzel);font-size:9px;
+  font-weight:600;letter-spacing:1.5px;cursor:pointer;transition:all .2s;
+}
+.btn-story-history:hover{border-color:var(--music);color:var(--music-l)}
+
+/* Stories main area */
+#stories-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#stories-topbar{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(7,8,9,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+.stories-menu-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:4px;display:none;flex-shrink:0}
+.st-avatar{
+  width:34px;height:34px;border-radius:50%;overflow:hidden;
+  border:1.5px solid rgba(168,85,247,.5);background:#0a0c10;flex-shrink:0;
+}
+.st-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;transform:scale(1.5) translateY(3px)}
+.st-info{flex:1;min-width:0}
+.st-name{font-family:var(--cinzel);font-size:13px;font-weight:600;color:var(--music-l)}
+.st-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);margin-top:1px}
+.st-dot{width:6px;height:6px;border-radius:50%;background:var(--music);box-shadow:0 0 8px var(--music);animation:pulse 2.5s ease-in-out infinite;flex-shrink:0}
+
+/* Stories messages */
+#story-messages{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px;display:flex;flex-direction:column;gap:8px;
+  scroll-behavior:smooth;
+}
+#story-messages::-webkit-scrollbar{width:3px}
+#story-messages::-webkit-scrollbar-thumb{background:var(--dim);border-radius:99px}
+
+/* Welcome screen */
+.story-welcome{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:16px;padding:28px 20px;
+  animation:fadeUp .5s ease;
+}
+.sw-char{
+  height:160px;object-fit:contain;
+  filter:drop-shadow(0 0 50px rgba(168,85,247,.5));
+  animation:charFloat 4s ease-in-out infinite;
+}
+.sw-title{font-family:var(--cinzel);font-size:22px;font-weight:700;color:var(--text)}
+.sw-title span{
+  background:linear-gradient(135deg,var(--music-l),var(--teal-l));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sw-sub{font-size:13px;color:var(--text2);max-width:300px;line-height:1.8}
+.sw-motto{
+  font-size:11px;color:var(--music);font-style:italic;
+  font-family:var(--cinzel);letter-spacing:.5px;
+}
+.story-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:440px}
+.story-chip{
+  padding:8px 15px;border:1px solid rgba(168,85,247,.3);border-radius:99px;
+  font-size:12px;color:var(--music-l);cursor:pointer;transition:all .18s;
+  background:rgba(168,85,247,.06);
+}
+.story-chip:hover,.story-chip:active{
+  border-color:rgba(168,85,247,.7);background:rgba(168,85,247,.15);
+  transform:translateY(-1px);
+}
+
+/* Story message bubbles */
+.smsg-group{display:flex;flex-direction:column;gap:2px;animation:slideIn .25s ease}
+.smsg{display:flex;gap:8px;align-items:flex-end}
+.smsg.user{flex-direction:row-reverse}
+.sm-av{
+  width:32px;height:32px;border-radius:50%;overflow:hidden;
+  border:1.5px solid rgba(168,85,247,.4);background:#0a0c10;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.sm-av img{width:100%;height:100%;object-fit:cover;object-position:top;transform:scale(1.5) translateY(4px)}
+.sm-av.usr{background:linear-gradient(135deg,#2a1a4a,#1a0a3a);border-color:rgba(168,85,247,.3)}
+.sm-av-spacer{width:32px;flex-shrink:0}
+.sm-body{max-width:80%;display:flex;flex-direction:column;gap:2px}
+.smsg.user .sm-body{align-items:flex-end}
+.sm-who{font-size:10px;color:var(--muted);padding:0 4px;font-family:var(--cinzel);letter-spacing:.5px;margin-bottom:2px}
+.sm-bubble{
+  padding:11px 15px;border-radius:18px;font-size:14px;
+  line-height:1.8;word-break:break-word;
+}
+.sm-bubble.ryxa{
+  background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(78,205,196,.05),var(--surface2));
+  border:1px solid rgba(168,85,247,.2);border-bottom-left-radius:4px;
+  color:var(--text);
+}
+.sm-bubble.user{
+  background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(168,85,247,.06));
+  border:1px solid rgba(168,85,247,.25);border-bottom-right-radius:4px;
+}
+/* Story bubble — tampilan khusus untuk cerita */
+.sm-bubble.story{
+  background:linear-gradient(160deg,rgba(168,85,247,.12),rgba(78,205,196,.08),rgba(0,0,0,.2));
+  border:1px solid rgba(168,85,247,.3);border-bottom-left-radius:4px;
+  position:relative;overflow:hidden;
+}
+.sm-bubble.story::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--music),var(--teal),var(--music));
+  animation:shimmer 3s ease-in-out infinite;
+}
+@keyframes shimmer{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
+.story-text{
+  white-space:pre-wrap;line-height:1.9;font-size:14px;
+  color:var(--text);font-family:var(--body);
+}
+.story-header{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid rgba(168,85,247,.15);
+}
+.story-header-icon{font-size:16px}
+.story-header-text{
+  font-family:var(--cinzel);font-size:10px;color:var(--music-l);
+  letter-spacing:1px;text-transform:uppercase;
+}
+
+/* Audio Player */
+.audio-player{
+  margin-top:12px;padding:12px 14px;
+  background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);
+  border-radius:12px;display:flex;align-items:center;gap:10px;
+}
+.ap-btn{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;border:none;
+  background:linear-gradient(135deg,var(--music),#7c3aed);
+  color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 12px rgba(168,85,247,.45);transition:all .2s;
+}
+.ap-btn:hover{transform:scale(1.1);box-shadow:0 4px 20px rgba(168,85,247,.6)}
+.ap-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ap-btn svg{width:14px;height:14px;margin-left:1px}
+.ap-btn.playing .ap-icon-play{display:none}
+.ap-btn.playing .ap-icon-pause{display:block}
+.ap-btn:not(.playing) .ap-icon-play{display:block}
+.ap-btn:not(.playing) .ap-icon-pause{display:none}
+.ap-info{flex:1;min-width:0}
+.ap-title{font-size:12px;font-weight:600;color:var(--text);font-family:var(--cinzel)}
+.ap-voice{font-size:10px;color:var(--music-l);margin-top:2px}
+.ap-progress{
+  flex:1;height:4px;background:rgba(168,85,247,.2);
+  border-radius:99px;overflow:hidden;cursor:pointer;
+  position:relative;
+}
+.ap-bar{
+  height:100%;background:linear-gradient(90deg,var(--music),var(--teal));
+  border-radius:99px;width:0%;transition:width .1s linear;
+}
+.ap-time{font-size:10px;color:var(--muted);font-family:var(--cinzel);flex-shrink:0;min-width:35px;text-align:right}
+.ap-loading{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--music-l);font-family:var(--cinzel)}
+.ap-loading .spin{border-top-color:var(--music);width:14px;height:14px}
+
+.sm-time{font-size:10px;color:var(--dim);padding:0 4px;margin-top:2px}
+
+/* Story typing */
+.story-typing{
+  background:linear-gradient(135deg,rgba(168,85,247,.1),var(--surface2));
+  border:1px solid rgba(168,85,247,.2);border-radius:18px;border-bottom-left-radius:4px;
+  padding:12px 16px;display:inline-flex;gap:5px;align-items:center;
+}
+.std{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--music);animation:bounce 1.2s ease-in-out infinite;
+}
+.std:nth-child(2){animation-delay:.2s}.std:nth-child(3){animation-delay:.4s}
+
+/* Stories input area */
+#story-input-area{
+  padding:10px 14px 14px;border-top:1px solid var(--border);
+  background:rgba(7,8,9,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  flex-shrink:0;
+}
+.story-in-box{
+  background:var(--surface2);border:1px solid rgba(168,85,247,.25);
+  border-radius:22px;display:flex;align-items:flex-end;gap:6px;
+  padding:8px 8px 8px 16px;transition:border-color .2s;
+}
+.story-in-box:focus-within{border-color:rgba(168,85,247,.55)}
+#story-input{
+  flex:1;background:transparent;border:none;color:var(--text);
+  font-family:var(--body);font-size:14px;line-height:1.55;
+  padding:5px 0;resize:none;outline:none;
+  min-height:30px;max-height:110px;overflow-y:auto;-webkit-appearance:none;
+}
+#story-input::placeholder{color:var(--muted)}
+#story-input::-webkit-scrollbar{width:0}
+.btn-story-send{
+  width:38px;height:38px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--music-l),var(--music),#7c3aed);
+  border:none;border-radius:13px;color:white;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 12px rgba(168,85,247,.35);transition:all .2s;
+}
+.btn-story-send:active{transform:scale(.93)}
+.btn-story-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.story-in-hint{font-size:10px;color:var(--dim);text-align:center;margin-top:6px;font-family:var(--cinzel);letter-spacing:.5px}
+
+/* Riwayat stories modal */
+#stories-history-modal{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  align-items:flex-end;justify-content:center;
+  padding:20px;
+}
+#stories-history-modal.open{display:flex}
+.shm-card{
+  width:100%;max-width:480px;max-height:80vh;
+  background:var(--surface);border:1px solid rgba(168,85,247,.25);
+  border-radius:20px 20px 0 0;overflow:hidden;display:flex;flex-direction:column;
+  animation:slideUpModal .3s cubic-bezier(.4,0,.2,1);
+}
+@media(min-width:700px){
+  .shm-card{border-radius:20px;margin:auto;animation:fadeUp .25s ease}
+  #stories-history-modal{align-items:center}
+}
+@keyframes slideUpModal{from{transform:translateY(100%)}to{transform:none}}
+.shm-head{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.shm-title{font-family:var(--cinzel);font-size:13px;font-weight:700;color:var(--music-l)}
+.shm-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}
+.shm-body{flex:1;overflow-y:auto;padding:12px}
+.shm-session{
+  padding:13px 16px;border-radius:12px;border:1px solid var(--border);
+  margin-bottom:8px;cursor:pointer;transition:all .18s;background:var(--surface2);
+}
+.shm-session:hover,.shm-session:active{border-color:rgba(168,85,247,.4);background:rgba(168,85,247,.06)}
+.shm-s-title{font-size:13px;color:var(--text);font-weight:500;margin-bottom:5px;line-height:1.4}
+.shm-s-meta{display:flex;gap:8px;align-items:center}
+.shm-s-count{font-size:10px;color:var(--music-l);font-family:var(--cinzel)}
+.shm-s-time{font-size:10px;color:var(--muted);font-family:var(--cinzel)}
+.shm-empty{padding:40px;text-align:center;font-size:13px;color:var(--muted);font-family:var(--cinzel)}
+
+/* Mobile responsive stories */
+@media(max-width:700px){
+  #stories-sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:50;
+    width:var(--sidebar-w);
+    transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    display:flex!important;
+  }
+  #stories-sidebar.open{transform:translateX(0)}
+  .ss-close-btn{display:block!important}
+  .stories-menu-btn{display:flex!important}
+  #story-input-area{
+    position:sticky;bottom:calc(var(--nav-h) + var(--safe-bottom));
+    padding-bottom:10px;z-index:10;
+  }
+  #story-messages{padding-bottom:20px}
+  #stories-main{margin-bottom:calc(var(--nav-h) + var(--safe-bottom))}
+  .story-in-hint{display:none}
+  .sm-body{max-width:85%}
+}
+
 
 /* DPI tinggi / font size diperbesar — bottom nav lebih tinggi */
 @media(max-width:700px) and (min-resolution:2.5dppx){
@@ -664,6 +973,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
       <div class="sn-item" data-page="leaderboard" onclick="navigate('leaderboard')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         <span class="sn-item-label">Ranking</span>
+      </div>
+      <div class="sn-item" data-page="stories" onclick="navigate('stories')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span class="sn-item-label" style="color:var(--music-l)">Stories</span>
       </div>
       <div class="sn-item" data-page="profil" onclick="navigate('profil')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -886,6 +1199,77 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
         </div>
       </div>
     </div>
+
+    <!-- RYXA STORIES -->
+    <div id="page-stories" class="page">
+      <!-- Sidebar -->
+      <div id="stories-sidebar">
+        <div class="ss-head">
+          <button class="ss-close-btn" onclick="closeStoriesSidebar()">✕</button>
+          <div class="ss-title">✦ Ryxa Stories</div>
+        </div>
+        <div class="ss-char-wrap">
+          <img class="ss-char" src="ryxa.png" alt="Ryxa"/>
+          <div class="ss-char-name">Ryxa</div>
+          <div class="ss-char-role">Penjaga Perpustakaan<br/>Dongeng Digital PAGASKA</div>
+          <div class="ss-motto">"Setiap kisah memiliki<br/>cahaya untuk ditemukan."</div>
+        </div>
+        <div class="ss-usage">
+          <div class="ss-usage-row">
+            <span class="ss-usage-lbl">Kuota Harian</span>
+            <span class="ss-usage-num" id="ss-usage-count">0 / 40</span>
+          </div>
+          <div class="ubar"><div class="ubar-fill" id="ss-ubar" style="background:linear-gradient(90deg,var(--music),var(--music-l))"></div></div>
+        </div>
+        <div class="ss-actions">
+          <button class="btn-new-story" onclick="newStory()">✦ Cerita Baru</button>
+          <button class="btn-story-history" onclick="openStoriesHistory()">📖 Riwayat Dongeng</button>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div id="stories-main">
+        <div id="stories-topbar">
+          <button class="stories-menu-btn" onclick="openStoriesSidebar()">☰</button>
+          <div class="st-avatar"><img src="ryxa.png" alt="Ryxa"/></div>
+          <div class="st-info">
+            <div class="st-name">Ryxa</div>
+            <div class="st-status">
+              <div class="st-dot"></div>
+              <span>Siap mendongengkan cerita untukmu</span>
+            </div>
+          </div>
+          <button class="topbar-btn" onclick="newStory()" style="border-color:rgba(168,85,247,.4);color:var(--music-l);display:none" id="st-new-btn">✦ Baru</button>
+        </div>
+
+        <div id="story-messages"></div>
+
+        <div id="story-input-area">
+          <div class="story-in-box">
+            <textarea id="story-input" rows="1" placeholder="Minta cerita ke Ryxa... contoh: ceritain dongeng tentang paskibra"></textarea>
+            <div class="in-actions">
+              <button class="btn-story-send" id="story-send-btn" onclick="sendStoryMessage()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="story-in-hint">Enter kirim · Shift+Enter baris baru</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Stories Modal -->
+    <div id="stories-history-modal">
+      <div class="shm-card">
+        <div class="shm-head">
+          <div class="shm-title">📖 Riwayat Dongeng</div>
+          <button class="shm-close" onclick="closeStoriesHistory()">✕</button>
+        </div>
+        <div class="shm-body" id="shm-body">
+          <div class="shm-empty">Memuat...</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MOBILE BOTTOM NAV -->
@@ -910,6 +1294,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--b
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
         <span class="bn-item-label">Ranking</span>
         <div class="bn-indicator"></div>
+      </button>
+      <button class="bn-item" data-page="stories" onclick="navigate('stories')" style="color:var(--muted)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span class="bn-item-label" style="color:inherit">Stories</span>
+        <div class="bn-indicator" style="background:var(--music)"></div>
       </button>
       <button class="bn-item" data-page="profil" onclick="navigate('profil')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1022,17 +1411,18 @@ function navigate(page, replace=false) {
 
   if (page==='riwayat') loadRiwayat();
   if (page==='leaderboard') loadLeaderboard();
+  if (page==='stories') { const sm=document.getElementById('story-messages'); if(sm && !sm.children.length) showStoryWelcome(); setupStoryTextarea(); updateStoriesUsageUI(); }
   if (page==='chat' && document.getElementById('messages').children.length===0) showChatWelcome();
   closeAllOverlays();
 }
 window.onpopstate = e => {
   const hash = location.hash.replace('#','');
-  const valid = ['beranda','chat','riwayat','leaderboard','profil'];
+  const valid = ['beranda','chat','riwayat','leaderboard','profil','stories'];
   navigate(valid.includes(hash)?hash:'beranda', true);
 };
 function getInitialPage() {
   const hash = location.hash.replace('#','');
-  const valid = ['beranda','chat','riwayat','leaderboard','profil'];
+  const valid = ['beranda','chat','riwayat','leaderboard','profil','stories'];
   return valid.includes(hash) ? hash : 'beranda';
 }
 
@@ -1047,6 +1437,8 @@ function closeChatSidebar() {
 }
 function closeAllOverlays() {
   document.getElementById('chat-sidebar').classList.remove('open');
+  const ss = document.getElementById('stories-sidebar');
+  if (ss) ss.classList.remove('open');
   document.getElementById('overlay').classList.remove('show');
 }
 
@@ -1670,6 +2062,394 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function fmtDate(iso){if(!iso)return '';return new Date(iso).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 let _tt;
 function toast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>{t.className='';},3000);}
+// ═══════════════════════════════════════════════════════════
+// RYXA STORIES
+// ═══════════════════════════════════════════════════════════
+let storyLoading = false;
+let storySessionId = generateStorySessionId();
+let storyAudios = {}; // cache audio instances per message index
+
+function generateStorySessionId() {
+  return 'story_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+}
+
+function newStory() {
+  const msgs = document.getElementById('story-messages');
+  msgs.innerHTML = '';
+  storySessionId = generateStorySessionId();
+  showStoryWelcome();
+  closeStoriesSidebar();
+  storyAudios = {};
+  toast('Cerita baru dimulai!', 'ok');
+}
+
+function showStoryWelcome() {
+  const msgs = document.getElementById('story-messages');
+  msgs.innerHTML = `
+    <div class="story-welcome">
+      <img class="sw-char" src="ryxa.png" alt="Ryxa"/>
+      <div class="sw-title">Haii! Aku <span>Ryxa</span> ✨</div>
+      <div class="sw-sub">Penjaga perpustakaan dongeng digital PAGASKA. Mau aku ceritakan dongeng apa hari ini?</div>
+      <div class="sw-motto">"Setiap kisah memiliki cahaya untuk ditemukan."</div>
+      <div class="story-chips">
+        <div class="story-chip" onclick="useStoryChip(this)">🎌 Prajurit paskibra muda</div>
+        <div class="story-chip" onclick="useStoryChip(this)">🌙 Dongeng pengantar tidur</div>
+        <div class="story-chip" onclick="useStoryChip(this)">⚔️ Petualangan di hutan</div>
+        <div class="story-chip" onclick="useStoryChip(this)">👑 Kisah kerajaan</div>
+        <div class="story-chip" onclick="useStoryChip(this)">🤝 Persahabatan anggota Pagaska</div>
+        <div class="story-chip" onclick="useStoryChip(this)">✨ Kejutan aja, Ryxa!</div>
+      </div>
+    </div>`;
+}
+
+function useStoryChip(el) {
+  const ta = document.getElementById('story-input');
+  ta.value = el.textContent.replace(/^[\p{Emoji}\s]+/u, '').trim();
+  ta.focus();
+  ta.dispatchEvent(new Event('input'));
+}
+
+function setupStoryTextarea() {
+  const ta = document.getElementById('story-input');
+  if (!ta) return;
+  ta.addEventListener('input', () => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 110) + 'px';
+  });
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendStoryMessage(); }
+  });
+}
+
+async function sendStoryMessage() {
+  if (storyLoading || !token) return;
+  const ta  = document.getElementById('story-input');
+  const msg = ta.value.trim();
+  if (!msg) return;
+
+  // Hapus welcome screen
+  const welcome = document.querySelector('.story-welcome');
+  if (welcome) welcome.remove();
+
+  // Tampilkan pesan user
+  addStoryMsg('user', msg);
+  ta.value = ''; ta.style.height = 'auto';
+  setStoryLoad(true);
+
+  const tyEl = showStoryTyping();
+
+  try {
+    const res = await fetch(`${API}/api/stories/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ message: msg, sessionId: storySessionId })
+    });
+    const d = await res.json();
+    tyEl.remove();
+
+    if (res.status === 401) { doLogout(); toast('Sesi habis. Login ulang.', 'err'); return; }
+    if (res.status === 403) {
+      addStoryMsg('ryxa', '⚠️ ' + (d.error || 'Akses ditolak.'));
+      toast(d.error || 'Akses ditolak.', 'err'); return;
+    }
+    if (!res.ok) {
+      addStoryMsg('ryxa', '⚠️ ' + (d.error || 'Terjadi kesalahan. Coba lagi ya!'));
+      toast(d.error || 'Error', 'err'); return;
+    }
+
+    // Tampilkan reply Ryxa
+    addStoryMsg('ryxa', d.reply, d.is_story, d.audio);
+
+    // Update usage
+    if (d.usage) {
+      usageData = { used: d.usage.used, daily: d.usage.daily };
+      updateUsageUI();
+      updateStoriesUsageUI();
+    }
+
+  } catch {
+    tyEl.remove();
+    addStoryMsg('ryxa', '⚠️ Gagal terhubung ke server. Coba lagi ya!');
+    toast('Gagal terhubung.', 'err');
+  } finally {
+    setStoryLoad(false);
+  }
+}
+
+function addStoryMsg(role, text, isStory = false, audio = null) {
+  const msgs  = document.getElementById('story-messages');
+  const isAI  = role !== 'user';
+  const time  = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const msgIdx = Date.now();
+
+  // User avatar
+  const pImg = document.getElementById('profil-avatar-img');
+  const userAvHtml = (pImg && pImg.style.display !== 'none')
+    ? `<img src="${pImg.src}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
+    : '🙂';
+
+  // Bubble content
+  let bubbleContent = '';
+  if (isAI && isStory) {
+    // Tampilan khusus dongeng
+    bubbleContent = `
+      <div class="story-header">
+        <span class="story-header-icon">📖</span>
+        <span class="story-header-text">Dongeng oleh Ryxa</span>
+      </div>
+      <div class="story-text">${esc(text)}</div>`;
+  } else if (isAI) {
+    bubbleContent = `<p>${esc(text).replace(/\n/g,'<br/>')}</p>`;
+  } else {
+    bubbleContent = `<p>${esc(text).replace(/\n/g,'<br/>')}</p>`;
+  }
+
+  // Audio player HTML
+  let audioHtml = '';
+  if (isStory && audio && audio.url) {
+    audioHtml = `
+      <div class="audio-player" id="ap-${msgIdx}">
+        <button class="ap-btn" id="apbtn-${msgIdx}" onclick="toggleStoryAudio(${msgIdx},'${esc(audio.url)}')">
+          <svg class="ap-icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg class="ap-icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <div class="ap-info">
+          <div class="ap-title">Narasi Ryxa</div>
+          <div class="ap-voice">${esc(audio.voice_name || 'Ryxa Voice')}</div>
+        </div>
+        <div class="ap-progress" onclick="seekStoryAudio(event,${msgIdx},'${esc(audio.url)}')">
+          <div class="ap-bar" id="apbar-${msgIdx}"></div>
+        </div>
+        <div class="ap-time" id="aptime-${msgIdx}">0:00</div>
+      </div>`;
+  } else if (isStory && !audio) {
+    // TTS gagal atau tidak ada audio
+    audioHtml = `<div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:var(--cinzel)">🎵 Audio tidak tersedia saat ini</div>`;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'smsg-group';
+  wrap.innerHTML = `
+    <div class="smsg ${isAI ? '' : 'user'}">
+      ${isAI ? `<div class="sm-av"><img src="ryxa.png" alt="Ryxa"/></div>` : '<div class="sm-av-spacer"></div>'}
+      <div class="sm-body">
+        <div class="sm-who">${isAI ? 'Ryxa' : (currentUser?.nama?.split(' ')[0] || 'Kamu')}</div>
+        <div class="sm-bubble ${isAI ? (isStory ? 'story' : 'ryxa') : 'user'}">
+          ${bubbleContent}
+          ${audioHtml}
+        </div>
+        <div class="sm-time">${time}</div>
+      </div>
+      ${!isAI ? `<div class="sm-av usr">${userAvHtml}</div>` : ''}
+    </div>`;
+
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showStoryTyping() {
+  const msgs = document.getElementById('story-messages');
+  const d = document.createElement('div');
+  d.className = 'smsg-group';
+  d.innerHTML = `<div class="smsg"><div class="sm-av"><img src="ryxa.png" alt="Ryxa"/></div><div class="sm-body"><div class="story-typing"><div class="std"></div><div class="std"></div><div class="std"></div></div></div></div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+  return d;
+}
+
+function setStoryLoad(v) {
+  storyLoading = v;
+  const btn = document.getElementById('story-send-btn');
+  const ta  = document.getElementById('story-input');
+  if (btn) btn.disabled = v;
+  if (ta)  ta.disabled  = v;
+}
+
+// ── AUDIO PLAYER ──────────────────────────────────────────────
+function toggleStoryAudio(msgIdx, url) {
+  const btn  = document.getElementById(`apbtn-${msgIdx}`);
+  const bar  = document.getElementById(`apbar-${msgIdx}`);
+  const time = document.getElementById(`aptime-${msgIdx}`);
+
+  // Pause semua audio lain yang sedang main
+  Object.entries(storyAudios).forEach(([k, a]) => {
+    if (String(k) !== String(msgIdx) && !a.paused) {
+      a.pause();
+      const ob = document.getElementById(`apbtn-${k}`);
+      if (ob) ob.classList.remove('playing');
+    }
+  });
+
+  if (!storyAudios[msgIdx]) {
+    storyAudios[msgIdx] = new Audio(url);
+    const audio = storyAudios[msgIdx];
+
+    audio.addEventListener('timeupdate', () => {
+      if (!audio.duration) return;
+      const pct = (audio.currentTime / audio.duration) * 100;
+      if (bar)  bar.style.width  = pct + '%';
+      if (time) time.textContent = formatAudioTime(audio.currentTime);
+    });
+    audio.addEventListener('ended', () => {
+      if (btn)  btn.classList.remove('playing');
+      if (bar)  bar.style.width  = '0%';
+      if (time) time.textContent = '0:00';
+    });
+    audio.addEventListener('error', () => {
+      toast('Gagal memutar audio.', 'err');
+      if (btn) btn.classList.remove('playing');
+    });
+  }
+
+  const audio = storyAudios[msgIdx];
+  if (audio.paused) {
+    audio.play().then(() => { if (btn) btn.classList.add('playing'); })
+         .catch(() => { toast('Gagal memutar. Coba lagi.', 'err'); });
+  } else {
+    audio.pause();
+    if (btn) btn.classList.remove('playing');
+  }
+}
+
+function seekStoryAudio(event, msgIdx, url) {
+  if (!storyAudios[msgIdx]) { toggleStoryAudio(msgIdx, url); return; }
+  const audio = storyAudios[msgIdx];
+  if (!audio.duration) return;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  audio.currentTime = pct * audio.duration;
+}
+
+function formatAudioTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ── STORIES SIDEBAR ───────────────────────────────────────────
+function openStoriesSidebar() {
+  document.getElementById('stories-sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeStoriesSidebar() {
+  document.getElementById('stories-sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── STORIES USAGE UI ─────────────────────────────────────────
+function updateStoriesUsageUI() {
+  const { used, daily } = usageData;
+  const pct = Math.min((used / daily) * 100, 100);
+  const bar = document.getElementById('ss-ubar');
+  if (bar) bar.style.width = pct + '%';
+  setEl('ss-usage-count', `${used} / ${daily}`);
+}
+
+// ── RIWAYAT STORIES ───────────────────────────────────────────
+async function openStoriesHistory() {
+  const modal = document.getElementById('stories-history-modal');
+  const body  = document.getElementById('shm-body');
+  modal.classList.add('open');
+  body.innerHTML = '<div class="shm-empty"><div class="spin" style="margin:0 auto"></div></div>';
+  closeStoriesSidebar();
+
+  try {
+    const res = await fetch(`${API}/api/stories/history`, { headers: { Authorization: `Bearer ${token}` } });
+    const d   = await res.json();
+    const sessions = d.sessions || [];
+
+    if (!sessions.length) {
+      body.innerHTML = '<div class="shm-empty">Belum ada riwayat dongeng.</div>';
+      return;
+    }
+
+    body.innerHTML = sessions.map(s => {
+      const safeData = encodeURIComponent(JSON.stringify(s));
+      return `<div class="shm-session" data-session="${safeData}" onclick="loadStorySession(this)">
+        <div class="shm-s-title">${esc(s.title || 'Sesi Dongeng')}</div>
+        <div class="shm-s-meta">
+          <span class="shm-s-count">📖 ${s.message_count || 0} pesan</span>
+          <span class="shm-s-time">${fmtDate(s.last_at)}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    body.innerHTML = `<div class="shm-empty">Gagal memuat riwayat.</div>`;
+  }
+}
+
+function loadStorySession(el) {
+  let session;
+  try { session = JSON.parse(decodeURIComponent(el.dataset.session)); }
+  catch { return; }
+
+  closeStoriesHistory();
+  storyAudios = {};
+
+  const msgs = document.getElementById('story-messages');
+  msgs.innerHTML = '';
+
+  const userNama = currentUser?.nama?.split(' ')[0] || 'Kamu';
+
+  (session.messages || []).forEach(m => {
+    const isAI   = m.role === 'assistant';
+    const isStory = m.text?.toLowerCase().startsWith('baik, aku mulai') ||
+                    m.text?.toLowerCase().startsWith('baik aku mulai');
+    const msgIdx  = m.created_at ? new Date(m.created_at).getTime() : Date.now();
+    const pImg    = document.getElementById('profil-avatar-img');
+    const userAvHtml = (pImg && pImg.style.display !== 'none')
+      ? `<img src="${pImg.src}" alt="" style="width:100%;height:100%;object-fit:cover"/>`
+      : '🙂';
+
+    let bubbleContent = '';
+    if (isAI && isStory) {
+      bubbleContent = `<div class="story-header"><span class="story-header-icon">📖</span><span class="story-header-text">Dongeng oleh Ryxa</span></div><div class="story-text">${esc(m.text)}</div>`;
+    } else {
+      bubbleContent = `<p>${esc(m.text || '').replace(/\n/g,'<br/>')}</p>`;
+    }
+
+    let audioHtml = '';
+    if (isAI && isStory && m.audio_url) {
+      audioHtml = `<div class="audio-player" id="ap-${msgIdx}">
+        <button class="ap-btn" id="apbtn-${msgIdx}" onclick="toggleStoryAudio(${msgIdx},'${esc(m.audio_url)}')">
+          <svg class="ap-icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg class="ap-icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <div class="ap-info"><div class="ap-title">Narasi Ryxa</div><div class="ap-voice">Ryxa Voice</div></div>
+        <div class="ap-progress" onclick="seekStoryAudio(event,${msgIdx},'${esc(m.audio_url)}')">
+          <div class="ap-bar" id="apbar-${msgIdx}"></div>
+        </div>
+        <div class="ap-time" id="aptime-${msgIdx}">0:00</div>
+      </div>`;
+    }
+
+    const timeStr = m.created_at
+      ? new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})
+      : '';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'smsg-group';
+    wrap.innerHTML = `<div class="smsg ${isAI ? '' : 'user'}">
+      ${isAI ? `<div class="sm-av"><img src="ryxa.png" alt="Ryxa"/></div>` : '<div class="sm-av-spacer"></div>'}
+      <div class="sm-body">
+        <div class="sm-who">${isAI ? 'Ryxa' : esc(userNama)}</div>
+        <div class="sm-bubble ${isAI ? (isStory ? 'story' : 'ryxa') : 'user'}">${bubbleContent}${audioHtml}</div>
+        <div class="sm-time">${timeStr}</div>
+      </div>
+      ${!isAI ? `<div class="sm-av usr">${userAvHtml}</div>` : ''}
+    </div>`;
+    msgs.appendChild(wrap);
+  });
+
+  msgs.scrollTop = msgs.scrollHeight;
+  navigate('stories', true);
+}
+
+function closeStoriesHistory() {
+  document.getElementById('stories-history-modal').classList.remove('open');
+}
+
 </script>
 </body>
 </html>
